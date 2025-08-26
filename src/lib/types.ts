@@ -17,3 +17,17 @@ export interface DeliveryLocation {
   name: string;
   price: number;
 }
+
+export interface Order {
+    id: string;
+    customer: {
+      name: string;
+      phone: string;
+      address?: string;
+    };
+    items: CartItem[];
+    total: number;
+    status: 'Pending' | 'In Progress' | 'Delivered' | 'Cancelled';
+    orderType: 'delivery' | 'pickup';
+  }
+  

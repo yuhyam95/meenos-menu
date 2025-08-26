@@ -1,4 +1,4 @@
-import type { FoodItem, DeliveryLocation } from '@/lib/types';
+import type { FoodItem, DeliveryLocation, Order } from '@/lib/types';
 
 export const menuItems: FoodItem[] = [
   {
@@ -81,3 +81,39 @@ export const deliveryLocations: DeliveryLocation[] = [
   { id: '3', name: 'Ikoyi', price: 1800 },
   { id: '4', name: 'Ajah', price: 2500 },
 ];
+
+export const orders: Order[] = [
+    {
+      id: 'ORD-001',
+      customer: { name: 'Femi Adebayo', phone: '08012345678', address: '123 Allen Avenue, Ikeja, Lagos' },
+      items: [
+        { ...menuItems[0], quantity: 2 },
+        { ...menuItems[2], quantity: 1 },
+        { ...menuItems[7], quantity: 2 },
+      ],
+      total: (3500 * 2) + 2000 + (1500*2),
+      status: 'Pending',
+      orderType: 'delivery',
+    },
+    {
+      id: 'ORD-002',
+      customer: { name: 'Aisha Bello', phone: '09087654321' },
+      items: [
+        { ...menuItems[1], quantity: 1 },
+        { ...menuItems[3], quantity: 1 },
+      ],
+      total: 4000 + 4500,
+      status: 'In Progress',
+      orderType: 'pickup',
+    },
+    {
+      id: 'ORD-003',
+      customer: { name: 'Chinedu Okoro', phone: '08123456789', address: '45 Admiralty Way, Lekki Phase 1, Lagos' },
+      items: [
+        { ...menuItems[5], quantity: 1 },
+      ],
+      total: 5000,
+      status: 'Delivered',
+      orderType: 'delivery',
+    },
+  ];

@@ -54,6 +54,7 @@ export function Cart() {
                         value={item.quantity}
                         onChange={(e) => updateQuantity(item.id, parseInt(e.target.value) || 0)}
                         className="h-6 w-10 text-center"
+                        min="0"
                       />
                       <Button
                         variant="outline"

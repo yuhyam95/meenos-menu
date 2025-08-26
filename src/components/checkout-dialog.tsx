@@ -22,20 +22,40 @@ export function CheckoutDialog() {
   const [isOpen, setIsOpen] = useState(false);
   const { clearCart, cartTotal } = useCart();
   const { toast } = useToast();
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+
 
   const handlePlaceOrder = () => {
+    // Here you would typically send the order to your backend
+    // For now, we'll just show a success message
+    console.log('Order placed:', {
+      customer: {
+        name,
+        phone,
+      },
+      items: cartItems,
+      total: cartTotal,
+      orderType,
+    });
+
+
     toast({
       title: 'Order Placed Successfully!',
       description: 'Thank you for your order. We will process it shortly.',
     });
     clearCart();
     setIsOpen(false);
+    setName('');
+    setPhone('');
   };
+
+  const { cartItems } = useCart();
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="w-full" size="lg">
+        <Button className="w-full" size="lg" disabled={cartItems.length === 0}>
           Proceed to Checkout
         </Button>
       </DialogTrigger>
@@ -70,7 +90,7 @@ export function CheckoutDialog() {
 
           <div className="space-y-2">
             <Label htmlFor="name">Full Name</Label>
-            <Input id="name" placeholder="John Doe" />
+            <Input id="name" placeholder="John Doe" value={name} onChange={(e) => setName(e.target.value)} />
           </div>
           {orderType === 'delivery' && (
             <div className="space-y-2">
@@ -80,7 +100,7 @@ export function CheckoutDialog() {
           )}
            <div className="space-y-2">
             <Label htmlFor="phone">Phone Number</Label>
-            <Input id="phone" placeholder="08012345678" />
+            <Input id="phone" placeholder="08012345678" value={phone} onChange={(e) => setPhone(e.target.value)} />
           </div>
         </div>
         <DialogFooter>
@@ -88,7 +108,7 @@ export function CheckoutDialog() {
                 <p className="text-lg font-bold">
                     Total: {cartTotal.toLocaleString('en-NG', { style: 'currency', currency: 'NGN' })}
                 </p>
-                <Button onClick={handlePlaceOrder}>Place Order</Button>
+                <Button onClick={handlePlaceOrder} disabled={!name || !phone}>Place Order</Button>
             </div>
         </DialogFooter>
       </DialogContent>

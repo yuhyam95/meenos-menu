@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { cn } from '@/lib/utils';
-import { Header } from '@/components/header';
 import { Toaster } from '@/components/ui/toaster';
 import { CartProvider } from '@/providers/cart-provider';
 
@@ -29,7 +28,6 @@ export default function RootLayout({
       >
         <CartProvider>
           <div className="relative flex min-h-screen flex-col">
-            <Header />
             <main className="flex-1">{children}</main>
           </div>
           <Toaster />

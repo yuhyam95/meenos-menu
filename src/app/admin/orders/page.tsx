@@ -43,14 +43,14 @@ export default function OrdersPage() {
         </p>
       </header>
 
-      <div className="grid gap-8 md:grid-cols-3 lg:grid-cols-4">
-        <div className="md:col-span-1 lg:col-span-1">
-            <Card className="h-full">
+      <div className="grid gap-8 md:grid-cols-3 lg:grid-cols-4 h-[calc(100vh-12rem)]">
+        <div className="md:col-span-1 lg:col-span-1 h-full">
+            <Card className="h-full flex flex-col">
                 <CardHeader>
                     <CardTitle>Orders</CardTitle>
                     <CardDescription>Select an order to view details</CardDescription>
                 </CardHeader>
-                <CardContent className="p-0">
+                <CardContent className="p-0 flex-1 overflow-y-auto">
                     <div className="flex flex-col">
                     {orders.map((order) => (
                         <button
@@ -72,10 +72,10 @@ export default function OrdersPage() {
             </Card>
         </div>
 
-        <div className="md:col-span-2 lg:col-span-3">
+        <div className="md:col-span-2 lg:col-span-3 h-full">
           {selectedOrder ? (
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
+            <Card className="h-full overflow-y-auto">
+              <CardHeader className="flex flex-row items-center justify-between sticky top-0 bg-card z-10">
                 <div>
                   <CardTitle>Order Details</CardTitle>
                   <CardDescription>Order ID: {selectedOrder.id}</CardDescription>

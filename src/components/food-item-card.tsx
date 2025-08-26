@@ -41,11 +41,11 @@ export function FoodItemCard({ item }: FoodItemCardProps) {
       <CardContent className="flex-grow p-6 pt-0">
         <CardDescription>{item.description}</CardDescription>
       </CardContent>
-      <CardFooter className="flex justify-between items-center p-6 pt-0 mt-auto">
+      <CardFooter className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-6 pt-0 mt-auto gap-4 sm:gap-2">
         <p className="text-xl font-bold text-primary">
           {item.price.toLocaleString('en-NG', { style: 'currency', currency: 'NGN' })}
         </p>
-        <Button onClick={() => addToCart(item)}>
+        <Button onClick={() => addToCart(item)} className="w-full sm:w-auto">
           <ShoppingCart className="mr-2 h-4 w-4" />
           Add to Cart
         </Button>

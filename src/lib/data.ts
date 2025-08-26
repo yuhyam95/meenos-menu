@@ -1,4 +1,4 @@
-import type { FoodItem } from '@/lib/types';
+import type { FoodItem, DeliveryLocation } from '@/lib/types';
 
 export const menuItems: FoodItem[] = [
   {
@@ -73,4 +73,11 @@ export const menuItems: FoodItem[] = [
     category: 'Drinks',
     'data-ai-hint': 'red cocktail',
   },
+];
+
+export const deliveryLocations: DeliveryLocation[] = [
+  { id: '1', name: 'Lekki Phase 1', price: 1500 },
+  { id: '2', name: 'Victoria Island', price: 2000 },
+  { id: '3', name: 'Ikoyi', price: 1800 },
+  { id: '4', name: 'Ajah', price: 2500 },
 ];

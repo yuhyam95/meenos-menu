@@ -11,3 +11,9 @@ export interface FoodItem {
 export interface CartItem extends FoodItem {
   quantity: number;
 }
+
+export interface DeliveryLocation {
+  id: string;
+  name: string;
+  price: number;
+}

@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from 'react';
-import Image from 'next/image';
-import { menuItems as initialMenuItems } from '@/lib/data';
-import type { FoodItem } from '@/lib/types';
+import { deliveryLocations as initialLocations } from '@/lib/data';
+import type { DeliveryLocation } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -32,7 +31,7 @@ import {
     AlertDialogTrigger,
   } from "@/components/ui/alert-dialog"
 import { MoreHorizontal, PlusCircle, Pencil, Trash2 } from 'lucide-react';
-import { MenuItemForm } from './menu-item-form';
+import { DeliveryPriceForm } from './delivery-price-form';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -41,33 +40,33 @@ import {
   } from "@/components/ui/dropdown-menu"
   
 
-export function MenuManager() {
-  const [menuItems, setMenuItems] = useState<FoodItem[]>(initialMenuItems);
+export function DeliveryPriceManager() {
+  const [locations, setLocations] = useState<DeliveryLocation[]>(initialLocations);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<FoodItem | null>(null);
+  const [editingLocation, setEditingLocation] = useState<DeliveryLocation | null>(null);
 
-  const handleSaveItem = (item: FoodItem) => {
-    if (editingItem) {
-      setMenuItems(menuItems.map((i) => (i.id === item.id ? item : i)));
+  const handleSaveLocation = (location: DeliveryLocation) => {
+    if (editingLocation) {
+      setLocations(locations.map((l) => (l.id === location.id ? location : l)));
     } else {
-      setMenuItems([...menuItems, { ...item, id: Date.now().toString() }]);
+      setLocations([...locations, { ...location, id: Date.now().toString() }]);
     }
-    setEditingItem(null);
+    setEditingLocation(null);
     setIsFormOpen(false);
   };
 
-  const handleEditItem = (item: FoodItem) => {
-    setEditingItem(item);
+  const handleEditLocation = (location: DeliveryLocation) => {
+    setEditingLocation(location);
     setIsFormOpen(true);
   };
 
   const handleAddNew = () => {
-    setEditingItem(null);
+    setEditingLocation(null);
     setIsFormOpen(true);
   }
 
-  const handleDeleteItem = (itemId: string) => {
-    setMenuItems(menuItems.filter((i) => i.id !== itemId));
+  const handleDeleteLocation = (locationId: string) => {
+    setLocations(locations.filter((l) => l.id !== locationId));
   };
 
   return (
@@ -75,38 +74,24 @@ export function MenuManager() {
       <div className="flex justify-end mb-4">
         <Button onClick={handleAddNew}>
           <PlusCircle className="mr-2 h-4 w-4" />
-          Add New Item
+          Add New Location
         </Button>
       </div>
       <div className="rounded-lg border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[80px]">Image</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Category</TableHead>
+              <TableHead>Location</TableHead>
               <TableHead>Price</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {menuItems.map((item) => (
-              <TableRow key={item.id}>
-                <TableCell>
-                  <div className="relative h-12 w-12 overflow-hidden rounded-md">
-                    <Image
-                      src={item.imageUrl}
-                      alt={item.name}
-                      fill
-                      sizes="100px"
-                      className="object-cover"
-                    />
-                  </div>
-                </TableCell>
-                <TableCell className="font-medium">{item.name}</TableCell>
-                <TableCell className="text-muted-foreground">{item.category}</TableCell>
+            {locations.map((location) => (
+              <TableRow key={location.id}>
+                <TableCell className="font-medium">{location.name}</TableCell>
                 <TableCell className="text-muted-foreground">
-                    {item.price.toLocaleString('en-NG', { style: 'currency', currency: 'NGN' })}
+                    {location.price.toLocaleString('en-NG', { style: 'currency', currency: 'NGN' })}
                 </TableCell>
                 <TableCell className="text-right">
                 <DropdownMenu>
@@ -117,7 +102,7 @@ export function MenuManager() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => handleEditItem(item)}>
+                      <DropdownMenuItem onClick={() => handleEditLocation(location)}>
                         <Pencil className="mr-2 h-4 w-4" />
                         Edit
                       </DropdownMenuItem>
@@ -132,12 +117,12 @@ export function MenuManager() {
                             <AlertDialogHeader>
                             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                             <AlertDialogDescription>
-                                This action cannot be undone. This will permanently delete the menu item.
+                                This action cannot be undone. This will permanently delete the delivery location.
                             </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDeleteItem(item.id)} className="bg-destructive hover:bg-destructive/90">
+                            <AlertDialogAction onClick={() => handleDeleteLocation(location.id)} className="bg-destructive hover:bg-destructive/90">
                                 Delete
                             </AlertDialogAction>
                             </AlertDialogFooter>
@@ -155,14 +140,14 @@ export function MenuManager() {
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{editingItem ? 'Edit Item' : 'Add New Item'}</DialogTitle>
+            <DialogTitle>{editingLocation ? 'Edit Location' : 'Add New Location'}</DialogTitle>
             <DialogDescription>
-              {editingItem ? 'Update the details of your menu item.' : 'Fill in the details for the new menu item.'}
+              {editingLocation ? 'Update the details of your delivery location.' : 'Fill in the details for the new delivery location.'}
             </DialogDescription>
           </DialogHeader>
-          <MenuItemForm
-            item={editingItem}
-            onSave={handleSaveItem}
+          <DeliveryPriceForm
+            location={editingLocation}
+            onSave={handleSaveLocation}
             onCancel={() => setIsFormOpen(false)}
           />
         </DialogContent>

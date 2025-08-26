@@ -6,7 +6,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { CartProvider } from '@/providers/cart-provider';
 
 export const metadata: Metadata = {
-  title: 'Meenos Menu Master',
+  title: 'meenos.ng',
   description: 'The easiest way to manage your menu and receive orders.',
 };
 

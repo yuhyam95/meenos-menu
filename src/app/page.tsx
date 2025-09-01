@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FoodItemCard } from '@/components/food-item-card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { FoodItem } from '@/lib/types';

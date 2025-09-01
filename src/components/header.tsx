@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -10,11 +11,6 @@ import { Cart } from '@/components/cart';
 export function Header() {
   const { cartCount } = useCart();
 
-  const navLinks = [
-    { href: '/', label: 'Menu' },
-    { href: '/admin', label: 'Admin' },
-  ];
-
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
@@ -25,17 +21,6 @@ export function Header() {
               meenos.ng
             </span>
           </Link>
-          <nav className="flex items-center space-x-6 text-sm font-medium">
-            {navLinks.map(({ href, label }) => (
-              <Link
-                key={href}
-                href={href}
-                className="transition-colors hover:text-foreground/80 text-foreground/60"
-              >
-                {label}
-              </Link>
-            ))}
-          </nav>
         </div>
 
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
@@ -70,15 +55,18 @@ export function Header() {
                   <span className="font-bold font-headline">meenos.ng</span>
                 </Link>
                 <nav className="flex flex-col space-y-4">
-                  {navLinks.map(({ href, label }) => (
-                    <Link
-                      key={href}
-                      href={href}
-                      className="transition-colors hover:text-foreground/80 text-foreground"
-                    >
-                      {label}
-                    </Link>
-                  ))}
+                  <Link
+                    href={'/'}
+                    className="transition-colors hover:text-foreground/80 text-foreground"
+                  >
+                    Menu
+                  </Link>
+                  <Link
+                    href={'/admin'}
+                    className="transition-colors hover:text-foreground/80 text-foreground"
+                  >
+                    Admin
+                  </Link>
                 </nav>
               </SheetContent>
             </Sheet>

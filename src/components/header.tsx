@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Menu, ShoppingCart, UtensilsCrossed } from 'lucide-react';
 import { useCart } from '@/hooks/use-cart';
 import { Cart } from '@/components/cart';
+import Image from 'next/image';
 
 export function Header() {
   const { cartCount } = useCart();
@@ -16,11 +17,8 @@ export function Header() {
       <div className="container flex h-16 items-center">
         {/* Desktop Header */}
         <div className="mr-4 hidden md:flex md:flex-1">
-          <Link href="/" className="mr-6 flex items-center space-x-2">
-            <UtensilsCrossed className="h-6 w-6 text-primary" />
-            <span className="hidden font-bold sm:inline-block font-headline">
-              meenos.ng
-            </span>
+          <Link href="/" className="mr-6 flex items-center">
+            <Image src="/meenos-logo.png" alt="meenos.ng logo" width={120} height={32} />
           </Link>
         </div>
 
@@ -36,8 +34,7 @@ export function Header() {
               </SheetTrigger>
               <SheetContent side="left">
                 <Link href="/" className="mr-6 flex items-center space-x-2 mb-6">
-                  <UtensilsCrossed className="h-6 w-6 text-primary" />
-                  <span className="font-bold font-headline">meenos.ng</span>
+                  <Image src="/meenos-logo.png" alt="meenos.ng logo" width={120} height={32} />
                 </Link>
                 <nav className="flex flex-col space-y-4">
                   <Link
@@ -51,11 +48,8 @@ export function Header() {
             </Sheet>
             
             {/* Center: Logo */}
-            <Link href="/" className="flex items-center space-x-2">
-              <UtensilsCrossed className="h-6 w-6 text-primary" />
-              <span className="font-bold font-headline">
-                meenos.ng
-              </span>
+            <Link href="/" className="flex items-center">
+              <Image src="/meenos-logo.png" alt="meenos.ng logo" width={120} height={32} />
             </Link>
 
             {/* Right: Cart */}

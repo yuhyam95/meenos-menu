@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { menuItems as initialMenuItems } from '@/lib/data';
 import type { FoodItem } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import {
@@ -39,19 +38,35 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
   } from "@/components/ui/dropdown-menu"
+import { getMenuItems, addMenuItem, updateMenuItem, deleteMenuItem } from '@/app/actions';
   
 
 export function MenuManager() {
-  const [menuItems, setMenuItems] = useState<FoodItem[]>(initialMenuItems);
+  const [menuItems, setMenuItems] = useState<FoodItem[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<FoodItem | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleSaveItem = (item: FoodItem) => {
-    if (editingItem) {
-      setMenuItems(menuItems.map((i) => (i.id === item.id ? item : i)));
-    } else {
-      setMenuItems([...menuItems, { ...item, id: Date.now().toString() }]);
+  useEffect(() => {
+    async function fetchItems() {
+        setIsLoading(true);
+        const items = await getMenuItems();
+        setMenuItems(items);
+        setIsLoading(false);
     }
+    fetchItems();
+  }, []);
+
+  const handleSaveItem = async (item: Omit<FoodItem, 'id'> & { id?: string }) => {
+    if (editingItem && item.id) {
+      await updateMenuItem({ ...item, id: item.id });
+    } else {
+      const { id, ...newItemData } = item;
+      await addMenuItem(newItemData);
+    }
+    
+    const updatedItems = await getMenuItems();
+    setMenuItems(updatedItems);
     setEditingItem(null);
     setIsFormOpen(false);
   };
@@ -66,8 +81,10 @@ export function MenuManager() {
     setIsFormOpen(true);
   }
 
-  const handleDeleteItem = (itemId: string) => {
-    setMenuItems(menuItems.filter((i) => i.id !== itemId));
+  const handleDeleteItem = async (itemId: string) => {
+    await deleteMenuItem(itemId);
+    const updatedItems = await getMenuItems();
+    setMenuItems(updatedItems);
   };
 
   return (
@@ -90,64 +107,75 @@ export function MenuManager() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {menuItems.map((item) => (
-              <TableRow key={item.id}>
-                <TableCell>
-                  <div className="relative h-12 w-12 overflow-hidden rounded-md">
-                    <Image
-                      src={item.imageUrl}
-                      alt={item.name}
-                      fill
-                      sizes="100px"
-                      className="object-cover"
-                    />
-                  </div>
-                </TableCell>
-                <TableCell className="font-medium">{item.name}</TableCell>
-                <TableCell className="text-muted-foreground">{item.category}</TableCell>
-                <TableCell className="text-muted-foreground">
-                    {item.price.toLocaleString('en-NG', { style: 'currency', currency: 'NGN' })}
-                </TableCell>
-                <TableCell className="text-right">
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0">
-                        <span className="sr-only">Open menu</span>
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => handleEditItem(item)}>
-                        <Pencil className="mr-2 h-4 w-4" />
-                        Edit
-                      </DropdownMenuItem>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                                <Trash2 className="mr-2 h-4 w-4 text-destructive" />
-                                <span className="text-destructive">Delete</span>
-                            </DropdownMenuItem>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                            <AlertDialogHeader>
-                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                                This action cannot be undone. This will permanently delete the menu item.
-                            </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDeleteItem(item.id)} className="bg-destructive hover:bg-destructive/90">
-                                Delete
-                            </AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            ))}
+            {isLoading ? (
+                <TableRow>
+                    <TableCell colSpan={5} className="text-center h-24">Loading menu items...</TableCell>
+                </TableRow>
+            ) : menuItems.length === 0 ? (
+                <TableRow>
+                    <TableCell colSpan={5} className="text-center h-24">No menu items found.</TableCell>
+                </TableRow>
+            ) : (
+                menuItems.map((item) => (
+                <TableRow key={item.id}>
+                    <TableCell>
+                    <div className="relative h-12 w-12 overflow-hidden rounded-md">
+                        <Image
+                        src={item.imageUrl}
+                        alt={item.name}
+                        fill
+                        sizes="100px"
+                        className="object-cover"
+                        />
+                    </div>
+                    </TableCell>
+                    <TableCell className="font-medium">{item.name}</TableCell>
+                    <TableCell className="text-muted-foreground">{item.category}</TableCell>
+                    <TableCell className="text-muted-foreground">
+                        {item.price.toLocaleString('en-NG', { style: 'currency', currency: 'NGN' })}
+                    </TableCell>
+                    <TableCell className="text-right">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => handleEditItem(item)}>
+                            <Pencil className="mr-2 h-4 w-4" />
+                            Edit
+                        </DropdownMenuItem>
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                    <Trash2 className="mr-2 h-4 w-4 text-destructive" />
+                                    <span className="text-destructive">Delete</span>
+                                </DropdownMenuItem>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    This action cannot be undone. This will permanently delete the menu item.
+                                </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleDeleteItem(item.id)} className="bg-destructive hover:bg-destructive/90">
+                                    Delete
+                                </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    </TableCell>
+                </TableRow>
+                ))
+            )}
+            
           </TableBody>
         </Table>
       </div>

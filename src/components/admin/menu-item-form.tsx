@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { useEffect } from 'react';
 
 const formSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
@@ -26,7 +27,7 @@ const formSchema = z.object({
 
 interface MenuItemFormProps {
   item: FoodItem | null;
-  onSave: (item: FoodItem) => void;
+  onSave: (data: Omit<FoodItem, 'id'> & { id?: string }) => void;
   onCancel: () => void;
 }
 
@@ -42,10 +43,20 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
     },
   });
 
+  useEffect(() => {
+    form.reset({
+        name: item?.name || '',
+        description: item?.description || '',
+        price: item?.price || 0,
+        category: item?.category || '',
+        imageUrl: item?.imageUrl || '',
+    });
+  }, [item, form]);
+
   function onSubmit(values: z.infer<typeof formSchema>) {
     onSave({
       ...values,
-      id: item?.id || Date.now().toString(),
+      id: item?.id,
     });
   }
 

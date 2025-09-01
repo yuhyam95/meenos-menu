@@ -1,8 +1,10 @@
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/toaster';
 import { CartProvider } from '@/providers/cart-provider';
+import { Header } from '@/components/header';
 
 export const metadata: Metadata = {
   title: 'meenos.ng',
@@ -28,6 +30,7 @@ export default function RootLayout({
       >
         <CartProvider>
           <div className="relative flex min-h-screen flex-col">
+            <Header />
             <main className="flex-1">{children}</main>
           </div>
           <Toaster />

@@ -14,7 +14,8 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
-        <div className="mr-4 hidden md:flex">
+        {/* Desktop Header */}
+        <div className="mr-4 hidden md:flex md:flex-1">
           <Link href="/" className="mr-6 flex items-center space-x-2">
             <UtensilsCrossed className="h-6 w-6 text-primary" />
             <span className="hidden font-bold sm:inline-block font-headline">
@@ -23,25 +24,9 @@ export function Header() {
           </Link>
         </div>
 
-        <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="relative">
-                <ShoppingCart className="h-5 w-5" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
-                    {cartCount}
-                  </span>
-                )}
-                <span className="sr-only">Open cart</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent className="flex w-full flex-col pr-0 sm:max-w-lg">
-              <Cart />
-            </SheetContent>
-          </Sheet>
-
-          <div className="md:hidden">
+        {/* Mobile Header */}
+        <div className="flex w-full items-center justify-between md:hidden">
+            {/* Left: Mobile Menu */}
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon">
@@ -64,7 +49,52 @@ export function Header() {
                 </nav>
               </SheetContent>
             </Sheet>
-          </div>
+            
+            {/* Center: Logo */}
+            <Link href="/" className="flex items-center space-x-2">
+              <UtensilsCrossed className="h-6 w-6 text-primary" />
+              <span className="font-bold font-headline">
+                meenos.ng
+              </span>
+            </Link>
+
+            {/* Right: Cart */}
+             <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="relative">
+                  <ShoppingCart className="h-5 w-5" />
+                  {cartCount > 0 && (
+                    <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+                      {cartCount}
+                    </span>
+                  )}
+                  <span className="sr-only">Open cart</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent className="flex w-full flex-col pr-0 sm:max-w-lg">
+                <Cart />
+              </SheetContent>
+            </Sheet>
+        </div>
+
+        {/* Desktop Cart */}
+        <div className="hidden items-center justify-end md:flex">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="relative">
+                <ShoppingCart className="h-5 w-5" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+                    {cartCount}
+                  </span>
+                )}
+                <span className="sr-only">Open cart</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent className="flex w-full flex-col pr-0 sm:max-w-lg">
+              <Cart />
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
     </header>

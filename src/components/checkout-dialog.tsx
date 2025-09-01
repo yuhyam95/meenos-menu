@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -16,15 +17,39 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useCart } from '@/hooks/use-cart';
 import { useToast } from '@/hooks/use-toast';
+import type { DeliveryLocation } from '@/lib/types';
+import { getDeliveryLocations } from '@/app/actions';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export function CheckoutDialog() {
   const [orderType, setOrderType] = useState('delivery');
   const [isOpen, setIsOpen] = useState(false);
-  const { clearCart, cartTotal } = useCart();
+  const { clearCart, cartTotal, cartItems } = useCart();
   const { toast } = useToast();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
+  const [deliveryLocations, setDeliveryLocations] = useState<DeliveryLocation[]>([]);
+  const [selectedLocation, setSelectedLocation] = useState<string | undefined>();
+  const [deliveryFee, setDeliveryFee] = useState(0);
 
+  useEffect(() => {
+    async function fetchLocations() {
+      const locations = await getDeliveryLocations();
+      setDeliveryLocations(locations);
+    }
+    if (orderType === 'delivery') {
+      fetchLocations();
+    }
+  }, [orderType]);
+  
+  const handleLocationChange = (locationId: string) => {
+    const location = deliveryLocations.find(loc => loc.id === locationId);
+    if (location) {
+        setSelectedLocation(locationId);
+        setDeliveryFee(location.price);
+    }
+  }
 
   const handlePlaceOrder = () => {
     // Here you would typically send the order to your backend
@@ -33,9 +58,10 @@ export function CheckoutDialog() {
       customer: {
         name,
         phone,
+        address: orderType === 'delivery' ? `${address}, ${deliveryLocations.find(l=> l.id === selectedLocation)?.name}` : undefined
       },
       items: cartItems,
-      total: cartTotal,
+      total: cartTotal + deliveryFee,
       orderType,
     });
 
@@ -48,9 +74,13 @@ export function CheckoutDialog() {
     setIsOpen(false);
     setName('');
     setPhone('');
+    setAddress('');
+    setSelectedLocation(undefined);
+    setDeliveryFee(0);
   };
 
-  const { cartItems } = useCart();
+  const finalTotal = cartTotal + (orderType === 'delivery' ? deliveryFee : 0);
+  const isOrderButtonDisabled = !name || !phone || (orderType === 'delivery' && (!address || !selectedLocation));
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -67,7 +97,7 @@ export function CheckoutDialog() {
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <RadioGroup defaultValue="delivery" onValueChange={setOrderType} className="grid grid-cols-2 gap-4">
+          <RadioGroup defaultValue="delivery" value={orderType} onValueChange={setOrderType} className="grid grid-cols-2 gap-4">
             <div>
               <RadioGroupItem value="delivery" id="delivery" className="peer sr-only" />
               <Label
@@ -93,10 +123,27 @@ export function CheckoutDialog() {
             <Input id="name" placeholder="John Doe" value={name} onChange={(e) => setName(e.target.value)} />
           </div>
           {orderType === 'delivery' && (
-            <div className="space-y-2">
-              <Label htmlFor="address">Delivery Address</Label>
-              <Input id="address" placeholder="123 Main St, Lagos" />
-            </div>
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="address">Delivery Address</Label>
+                <Input id="address" placeholder="123 Main St" value={address} onChange={e => setAddress(e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="location">Delivery Area</Label>
+                <Select onValueChange={handleLocationChange} value={selectedLocation}>
+                    <SelectTrigger id="location">
+                        <SelectValue placeholder="Select a delivery area" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {deliveryLocations.map(location => (
+                            <SelectItem key={location.id} value={location.id!}>
+                                {location.name} - {location.price.toLocaleString('en-NG', { style: 'currency', currency: 'NGN' })}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+              </div>
+            </>
           )}
            <div className="space-y-2">
             <Label htmlFor="phone">Phone Number</Label>
@@ -106,12 +153,13 @@ export function CheckoutDialog() {
         <DialogFooter>
             <div className="w-full flex justify-between items-center">
                 <p className="text-lg font-bold">
-                    Total: {cartTotal.toLocaleString('en-NG', { style: 'currency', currency: 'NGN' })}
+                    Total: {finalTotal.toLocaleString('en-NG', { style: 'currency', currency: 'NGN' })}
                 </p>
-                <Button onClick={handlePlaceOrder} disabled={!name || !phone}>Place Order</Button>
+                <Button onClick={handlePlaceOrder} disabled={isOrderButtonDisabled}>Place Order</Button>
             </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
+

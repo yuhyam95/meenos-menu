@@ -24,13 +24,14 @@ import {
     SelectValue,
   } from '@/components/ui/select';
 import { useEffect } from 'react';
+import Image from 'next/image';
 
 const formSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
   description: z.string().min(10, 'Description must be at least 10 characters.'),
   price: z.coerce.number().positive('Price must be a positive number.'),
   category: z.string().min(1, 'Category is required.'),
-  imageUrl: z.string().url('Must be a valid URL.'),
+  imageUrl: z.string().min(1, 'Image is required.'),
 });
 
 interface MenuItemFormProps {
@@ -62,12 +63,25 @@ export function MenuItemForm({ item, categories, onSave, onCancel }: MenuItemFor
     });
   }, [item, form]);
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        form.setValue('imageUrl', reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   function onSubmit(values: z.infer<typeof formSchema>) {
     onSave({
       ...values,
       id: item?.id,
     });
   }
+
+  const imageUrlValue = form.watch('imageUrl');
 
   return (
     <Form {...form}>
@@ -118,7 +132,7 @@ export function MenuItemForm({ item, categories, onSave, onCancel }: MenuItemFor
                 render={({ field }) => (
                     <FormItem>
                     <FormLabel>Category</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValuechange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                         <SelectTrigger>
                             <SelectValue placeholder="Select a category" />
@@ -137,19 +151,19 @@ export function MenuItemForm({ item, categories, onSave, onCancel }: MenuItemFor
                 )}
             />
         </div>
-        <FormField
-          control={form.control}
-          name="imageUrl"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Image URL</FormLabel>
-              <FormControl>
-                <Input placeholder="https://example.com/image.jpg" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <FormItem>
+            <FormLabel>Image</FormLabel>
+            {imageUrlValue && (
+                <div className="relative h-40 w-full mb-2">
+                    <Image src={imageUrlValue} alt="Preview" fill className="object-contain rounded-md" sizes="100vw"/>
+                </div>
+            )}
+            <FormControl>
+              <Input type="file" accept="image/*" onChange={handleImageChange} />
+            </FormControl>
+            <FormMessage>{form.formState.errors.imageUrl?.message}</FormMessage>
+          </FormItem>
+
         <div className="flex justify-end gap-2 pt-4">
             <Button type="button" variant="ghost" onClick={onCancel}>Cancel</Button>
             <Button type="submit">Save Item</Button>

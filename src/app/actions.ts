@@ -11,17 +11,20 @@ async function getDeliveryCollection(): Promise<Collection<DeliveryLocation>> {
   return db.collection<DeliveryLocation>('delivery_locations');
 }
 
-async function getMenuCollection(): Promise<Collection<FoodItem>> {
+async function getMenuCollection(): Promise<Collection<Omit<FoodItem, 'id'>>> {
     const client = await clientPromise;
     const db = client.db('meenos');
-    return db.collection<FoodItem>('menu_items');
+    return db.collection<Omit<FoodItem, 'id'>>('menu_items');
 }
 
 export async function getDeliveryLocations(): Promise<DeliveryLocation[]> {
   const collection = await getDeliveryCollection();
   const locations = await collection.find({}).toArray();
-  // Convert _id to string for client-side usage
-  return locations.map(loc => ({ ...loc, _id: undefined, id: loc._id!.toString() }));
+  // Convert _id to string for client-side usage and remove it
+  return locations.map(loc => {
+    const { _id, ...rest } = loc;
+    return { ...rest, id: _id!.toString() };
+  });
 }
 
 export async function addDeliveryLocation(locationData: Omit<DeliveryLocation, 'id' | '_id'>): Promise<void> {
@@ -54,7 +57,10 @@ export async function deleteDeliveryLocation(locationId: string): Promise<void> 
 export async function getMenuItems(): Promise<FoodItem[]> {
     const collection = await getMenuCollection();
     const items = await collection.find({}).toArray();
-    return items.map(item => ({ ...item, id: item._id!.toString() }));
+    return items.map(item => {
+        const { _id, ...rest } = item;
+        return { ...rest, id: _id!.toString() };
+    });
 }
 
 export async function addMenuItem(itemData: Omit<FoodItem, 'id' | '_id'>): Promise<void> {

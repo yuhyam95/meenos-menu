@@ -9,6 +9,7 @@ import { UtensilsCrossed } from 'lucide-react';
 import { getMenuItems } from './actions';
 import { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import Image from 'next/image';
 
 function MenuItemsDisplay() {
   const [allMenuItems, setAllMenuItems] = useState<FoodItem[]>([]);
@@ -75,21 +76,34 @@ function MenuItemsDisplay() {
 
 export default function Home() {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <header className="text-center mb-12">
-        <h1 className="font-headline text-4xl md:text-5xl font-bold tracking-tight">
-          Our Menu
-        </h1>
-        <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-          Explore our delicious offerings, crafted with the freshest ingredients from meenos.ng.
-        </p>
-      </header>
-      
-      <Suspense fallback={<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {[...Array(8)].map((_, i) => <Skeleton key={i} className="h-96 w-full" />)}
-      </div>}>
-        <MenuItemsDisplay />
-      </Suspense>
-    </div>
+    <>
+      <div className="relative h-64 md:h-96 w-full">
+        <Image 
+          src="https://picsum.photos/1600/900" 
+          alt="Nigerian food platter"
+          fill
+          className="object-cover"
+          data-ai-hint="food platter"
+          priority
+        />
+        <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center">
+          <header className="text-center text-white px-4">
+            <h1 className="font-headline text-4xl md:text-6xl font-bold tracking-tight">
+              Our Menu
+            </h1>
+            <p className="mt-4 text-lg md:text-xl text-white/90 max-w-2xl mx-auto">
+              Explore our delicious offerings, crafted with the freshest ingredients from meenos.ng.
+            </p>
+          </header>
+        </div>
+      </div>
+      <div className="container mx-auto px-4 py-8 md:py-12">
+        <Suspense fallback={<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {[...Array(8)].map((_, i) => <Skeleton key={i} className="h-96 w-full" />)}
+        </div>}>
+          <MenuItemsDisplay />
+        </Suspense>
+      </div>
+    </>
   );
 }

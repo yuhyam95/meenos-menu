@@ -3,7 +3,7 @@
 
 import { revalidatePath } from 'next/cache';
 import clientPromise from '@/lib/db';
-import type { DeliveryLocation, FoodItem, FoodCategory } from '@/lib/types';
+import type { DeliveryLocation, FoodItem, FoodCategory, Order, OrderStatus } from '@/lib/types';
 import { Collection, ObjectId } from 'mongodb';
 
 async function getDeliveryCollection(): Promise<Collection<DeliveryLocation>> {
@@ -23,6 +23,13 @@ async function getCategoryCollection(): Promise<Collection<Omit<FoodCategory, 'i
     const db = client.db('meenos');
     return db.collection<Omit<FoodCategory, 'id'>>('food_categories');
 }
+
+async function getOrdersCollection(): Promise<Collection<Omit<Order, 'id'>>> {
+  const client = await clientPromise;
+  const db = client.db('meenos');
+  return db.collection<Omit<Order, 'id'>>('orders');
+}
+
 
 export async function getDeliveryLocations(): Promise<DeliveryLocation[]> {
   const collection = await getDeliveryCollection();
@@ -134,4 +141,30 @@ export async function deleteFoodCategory(categoryId: string): Promise<void> {
     await collection.deleteOne({ _id: new ObjectId(categoryId) });
     revalidatePath('/admin/categories');
     revalidatePath('/admin/menu');
+}
+
+// Order Actions
+export async function getOrders(): Promise<Order[]> {
+  const collection = await getOrdersCollection();
+  const orders = await collection.find({}).sort({ createdAt: -1 }).toArray();
+  return orders.map(order => {
+    const { _id, ...rest } = order;
+    return { ...rest, id: _id!.toString() };
+  });
+}
+
+export async function addOrder(orderData: Omit<Order, 'id' | '_id' | 'createdAt'>): Promise<void> {
+  const collection = await getOrdersCollection();
+  const now = new Date();
+  await collection.insertOne({ ...orderData, createdAt: now });
+  revalidatePath('/admin/orders');
+}
+
+export async function updateOrderStatus(orderId: string, status: OrderStatus): Promise<void> {
+  if (!ObjectId.isValid(orderId)) {
+    throw new Error('Invalid ID for updating order status.');
+  }
+  const collection = await getOrdersCollection();
+  await collection.updateOne({ _id: new ObjectId(orderId) }, { $set: { status } });
+  revalidatePath('/admin/orders');
 }

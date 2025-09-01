@@ -30,6 +30,7 @@ export interface FoodCategory {
 }
 
 export interface Order {
+    _id?: ObjectId;
     id: string;
     customer: {
       name: string;
@@ -40,5 +41,7 @@ export interface Order {
     total: number;
     status: 'Pending' | 'In Progress' | 'Delivered' | 'Cancelled';
     orderType: 'delivery' | 'pickup';
+    createdAt: Date;
   }
   
+  export type OrderStatus = 'Pending' | 'In Progress' | 'Delivered' | 'Cancelled';

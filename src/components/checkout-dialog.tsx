@@ -18,7 +18,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useCart } from '@/hooks/use-cart';
 import { useToast } from '@/hooks/use-toast';
 import type { DeliveryLocation } from '@/lib/types';
-import { getDeliveryLocations } from '@/app/actions';
+import { getDeliveryLocations, addOrder } from '@/app/actions';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export function CheckoutDialog() {
@@ -51,20 +51,19 @@ export function CheckoutDialog() {
     }
   }
 
-  const handlePlaceOrder = () => {
-    // Here you would typically send the order to your backend
-    // For now, we'll just show a success message
-    console.log('Order placed:', {
-      customer: {
-        name,
-        phone,
-        address: orderType === 'delivery' ? `${address}, ${deliveryLocations.find(l=> l.id === selectedLocation)?.name}` : undefined
-      },
+  const handlePlaceOrder = async () => {
+    const locationName = deliveryLocations.find(l=> l.id === selectedLocation)?.name || '';
+    const deliveryAddress = orderType === 'delivery' ? `${address}, ${locationName}` : undefined;
+    
+    const orderData = {
+      customer: { name, phone, address: deliveryAddress },
       items: cartItems,
       total: cartTotal + deliveryFee,
-      orderType,
-    });
+      status: 'Pending' as const,
+      orderType: orderType as 'delivery' | 'pickup',
+    };
 
+    await addOrder(orderData);
 
     toast({
       title: 'Order Placed Successfully!',
@@ -80,7 +79,7 @@ export function CheckoutDialog() {
   };
 
   const finalTotal = cartTotal + (orderType === 'delivery' ? deliveryFee : 0);
-  const isOrderButtonDisabled = !name || !phone || (orderType === 'delivery' && (!address || !selectedLocation));
+  const isOrderButtonDisabled = !name || !phone || (orderType === 'delivery' && (!address || !selectedLocation)) || cartItems.length === 0;
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -162,4 +161,3 @@ export function CheckoutDialog() {
     </Dialog>
   );
 }
-

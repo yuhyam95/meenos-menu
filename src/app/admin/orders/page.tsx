@@ -1,9 +1,9 @@
 
 "use client";
 
-import { useState } from 'react';
-import { orders as initialOrders } from '@/lib/data';
-import type { Order } from '@/lib/types';
+import { useState, useEffect } from 'react';
+import { getOrders, updateOrderStatus } from '@/app/actions';
+import type { Order, OrderStatus } from '@/lib/types';
 import {
   Table,
   TableBody,
@@ -20,17 +20,55 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Badge } from '@/components/ui/badge';
-import { Truck } from 'lucide-react';
+import { Truck, MoreVertical } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Button } from '@/components/ui/button';
+import { format } from 'date-fns';
 
+const statusColors: Record<OrderStatus, 'default' | 'secondary' | 'destructive' | 'outline'> = {
+  Pending: 'destructive',
+  'In Progress': 'secondary',
+  Delivered: 'default',
+  Cancelled: 'outline',
+};
 
 export default function OrdersPage() {
-    const [orders, setOrders] = useState<Order[]>(initialOrders);
-    const [selectedOrder, setSelectedOrder] = useState<Order | null>(orders[0] || null);
+    const [orders, setOrders] = useState<Order[]>([]);
+    const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
-
+    useEffect(() => {
+        async function fetchOrders() {
+            setIsLoading(true);
+            const fetchedOrders = await getOrders();
+            setOrders(fetchedOrders);
+            if (fetchedOrders.length > 0) {
+                setSelectedOrder(fetchedOrders[0]);
+            }
+            setIsLoading(false);
+        }
+        fetchOrders();
+    }, []);
+    
     const handleSelectOrder = (order: Order) => {
         setSelectedOrder(order);
     };
+
+    const handleStatusUpdate = async (orderId: string, status: OrderStatus) => {
+      await updateOrderStatus(orderId, status);
+      const updatedOrders = await getOrders();
+      setOrders(updatedOrders);
+      if (selectedOrder?.id === orderId) {
+        const updatedSelected = updatedOrders.find(o => o.id === orderId);
+        setSelectedOrder(updatedSelected || null);
+      }
+    };
+
 
     return (
     <div className="container mx-auto px-4 py-8">
@@ -52,7 +90,12 @@ export default function OrdersPage() {
                 </CardHeader>
                 <CardContent className="p-0 flex-1 overflow-y-auto">
                     <div className="flex flex-col">
-                    {orders.map((order) => (
+                    {isLoading ? (
+                      <p className="p-4 text-center">Loading orders...</p>
+                    ) : orders.length === 0 ? (
+                      <p className="p-4 text-center">No orders found.</p>
+                    ) : (
+                      orders.map((order) => (
                         <button
                         key={order.id}
                         onClick={() => handleSelectOrder(order)}
@@ -60,13 +103,14 @@ export default function OrdersPage() {
                         >
                         <div className="flex justify-between items-center">
                             <p className="font-semibold">{order.customer.name}</p>
-                            <Badge variant={order.status === 'Delivered' ? 'default' : order.status === 'Pending' ? 'destructive' : 'secondary'}>
+                            <Badge variant={statusColors[order.status]}>
                                 {order.status}
                             </Badge>
                         </div>
-                        <p className="text-sm text-muted-foreground">{order.id}</p>
+                        <p className="text-sm text-muted-foreground">{format(new Date(order.createdAt), "PPp")}</p>
                         </button>
-                    ))}
+                      ))
+                    )}
                     </div>
                 </CardContent>
             </Card>
@@ -80,9 +124,29 @@ export default function OrdersPage() {
                   <CardTitle>Order Details</CardTitle>
                   <CardDescription>Order ID: {selectedOrder.id}</CardDescription>
                 </div>
-                <Badge variant={selectedOrder.status === 'Delivered' ? 'default' : selectedOrder.status === 'Pending' ? 'destructive' : 'secondary'} className="capitalize">
-                  {selectedOrder.status}
-                </Badge>
+                <div className="flex items-center gap-2">
+                  <Badge variant={statusColors[selectedOrder.status]} className="capitalize">
+                    {selectedOrder.status}
+                  </Badge>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      {(Object.keys(statusColors) as OrderStatus[]).map((status) => (
+                        <DropdownMenuItem
+                          key={status}
+                          onClick={() => handleStatusUpdate(selectedOrder.id, status)}
+                          disabled={selectedOrder.status === status}
+                        >
+                          Mark as {status}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="grid gap-6">
@@ -91,6 +155,9 @@ export default function OrdersPage() {
                         <p><strong>Name:</strong> {selectedOrder.customer.name}</p>
                         <p><strong>Phone:</strong> {selectedOrder.customer.phone}</p>
                         {selectedOrder.customer.address && <p><strong>Address:</strong> {selectedOrder.customer.address}</p>}
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Ordered on: {format(new Date(selectedOrder.createdAt), "PPpp")}
+                        </p>
                     </div>
                     <div>
                         <h3 className="font-semibold mb-2">Order Items</h3>

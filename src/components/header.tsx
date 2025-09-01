@@ -61,12 +61,6 @@ export function Header() {
                   >
                     Menu
                   </Link>
-                  <Link
-                    href={'/admin'}
-                    className="transition-colors hover:text-foreground/80 text-foreground"
-                  >
-                    Admin
-                  </Link>
                 </nav>
               </SheetContent>
             </Sheet>

@@ -14,6 +14,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { useEffect } from 'react';
 
 const formSchema = z.object({
   name: z.string().min(2, 'Location name must be at least 2 characters.'),
@@ -35,10 +36,17 @@ export function DeliveryPriceForm({ location, onSave, onCancel }: DeliveryPriceF
     },
   });
 
+  useEffect(() => {
+    form.reset({
+      name: location?.name || '',
+      price: location?.price || 0,
+    });
+  }, [location, form]);
+
   function onSubmit(values: z.infer<typeof formSchema>) {
     onSave({
       ...values,
-      id: location?.id || Date.now().toString(),
+      id: location?.id,
     });
   }
 

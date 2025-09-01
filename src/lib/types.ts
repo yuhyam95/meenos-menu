@@ -1,4 +1,7 @@
+import type { ObjectId } from 'mongodb';
+
 export interface FoodItem {
+  _id?: ObjectId;
   id: string;
   name: string;
   description: string;
@@ -13,7 +16,8 @@ export interface CartItem extends FoodItem {
 }
 
 export interface DeliveryLocation {
-  id: string;
+  _id?: ObjectId;
+  id?: string;
   name: string;
   price: number;
 }

@@ -1,5 +1,7 @@
 
+import { Suspense } from 'react';
 import { DeliveryPriceManager } from "@/components/admin/delivery-price-manager";
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function DeliveryManagementPage() {
     return (
@@ -14,7 +16,9 @@ export default function DeliveryManagementPage() {
             </header>
             <section>
                 <div className="mt-6">
-                    <DeliveryPriceManager />
+                    <Suspense fallback={<Skeleton className="h-64 w-full" />}>
+                        <DeliveryPriceManager />
+                    </Suspense>
                 </div>
             </section>
         </div>

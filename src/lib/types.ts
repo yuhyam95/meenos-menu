@@ -1,3 +1,4 @@
+
 import type { ObjectId } from 'mongodb';
 
 export interface FoodItem {
@@ -20,6 +21,12 @@ export interface DeliveryLocation {
   id?: string;
   name: string;
   price: number;
+}
+
+export interface FoodCategory {
+  _id?: ObjectId;
+  id?: string;
+  name: string;
 }
 
 export interface Order {

@@ -1,9 +1,10 @@
+
 "use client";
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import type { FoodItem } from '@/lib/types';
+import type { FoodItem, FoodCategory } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -15,6 +16,13 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+  } from '@/components/ui/select';
 import { useEffect } from 'react';
 
 const formSchema = z.object({
@@ -27,11 +35,12 @@ const formSchema = z.object({
 
 interface MenuItemFormProps {
   item: FoodItem | null;
+  categories: FoodCategory[];
   onSave: (data: Omit<FoodItem, 'id'> & { id?: string }) => void;
   onCancel: () => void;
 }
 
-export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
+export function MenuItemForm({ item, categories, onSave, onCancel }: MenuItemFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -104,17 +113,28 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
             )}
             />
             <FormField
-            control={form.control}
-            name="category"
-            render={({ field }) => (
-                <FormItem>
-                <FormLabel>Category</FormLabel>
-                <FormControl>
-                    <Input placeholder="e.g., Main, Sides" {...field} />
-                </FormControl>
-                <FormMessage />
-                </FormItem>
-            )}
+                control={form.control}
+                name="category"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Category</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select a category" />
+                        </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                        {categories.map(category => (
+                            <SelectItem key={category.id} value={category.name}>
+                            {category.name}
+                            </SelectItem>
+                        ))}
+                        </SelectContent>
+                    </Select>
+                    <FormMessage />
+                    </FormItem>
+                )}
             />
         </div>
         <FormField

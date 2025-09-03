@@ -1,11 +1,13 @@
 
 'use client';
 
-import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar";
-import { UtensilsCrossed, ShoppingCart, Truck, Tags, Settings, Users } from 'lucide-react';
+import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter } from "@/components/ui/sidebar";
+import { UtensilsCrossed, ShoppingCart, Truck, Tags, Settings, Users, LogOut } from 'lucide-react';
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
+import { logout } from "@/app/actions";
+import { Button } from "@/components/ui/button";
 
 
 export default function AdminLayout({
@@ -24,6 +26,10 @@ export default function AdminLayout({
     { href: '/admin/store-setup', label: 'Store Setup', icon: Settings },
   ];
 
+  const handleLogout = async () => {
+    await logout();
+  }
+
   return (
       <SidebarProvider>
         <div className="flex flex-1">
@@ -31,22 +37,30 @@ export default function AdminLayout({
               <SidebarHeader className="h-16 flex-shrink-0">
               </SidebarHeader>
               <SidebarContent>
-              <SidebarMenu>
-                  {menuItems.map((item) => (
-                  <SidebarMenuItem key={item.href}>
-                      <Link href={item.href}>
-                          <SidebarMenuButton 
-                              isActive={pathname.startsWith(item.href)}
-                              tooltip={item.label}
-                          >
-                              <item.icon />
-                              <span>{item.label}</span>
-                          </SidebarMenuButton>
-                      </Link>
-                  </SidebarMenuItem>
-                  ))}
-              </SidebarMenu>
+                <SidebarMenu>
+                    {menuItems.map((item) => (
+                    <SidebarMenuItem key={item.href}>
+                        <Link href={item.href}>
+                            <SidebarMenuButton 
+                                isActive={pathname.startsWith(item.href)}
+                                tooltip={item.label}
+                            >
+                                <item.icon />
+                                <span>{item.label}</span>
+                            </SidebarMenuButton>
+                        </Link>
+                    </SidebarMenuItem>
+                    ))}
+                </SidebarMenu>
               </SidebarContent>
+              <SidebarFooter>
+                <form action={handleLogout}>
+                    <Button type="submit" variant="ghost" className="w-full justify-start">
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Log Out
+                    </Button>
+                </form>
+              </SidebarFooter>
           </Sidebar>
           <SidebarInset>
               {children}

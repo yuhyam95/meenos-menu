@@ -58,7 +58,7 @@ export interface StoreSetting {
 
 export interface User {
     _id?: ObjectId;
-    id: string;
+    id?: string;
     name: string;
     email: string;
     phone: string;

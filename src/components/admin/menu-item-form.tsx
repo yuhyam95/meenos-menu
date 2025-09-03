@@ -30,6 +30,7 @@ const formSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
   description: z.string().min(10, 'Description must be at least 10 characters.'),
   price: z.coerce.number().positive('Price must be a positive number.'),
+  quantity: z.coerce.number().min(0, 'Quantity must be 0 or more.'),
   category: z.string().min(1, 'Category is required.'),
   imageUrl: z.string().min(1, 'Image is required.'),
 });
@@ -48,6 +49,7 @@ export function MenuItemForm({ item, categories, onSave, onCancel }: MenuItemFor
       name: item?.name || '',
       description: item?.description || '',
       price: item?.price || 0,
+      quantity: item?.quantity || 0,
       category: item?.category || '',
       imageUrl: item?.imageUrl || '',
     },
@@ -58,6 +60,7 @@ export function MenuItemForm({ item, categories, onSave, onCancel }: MenuItemFor
         name: item?.name || '',
         description: item?.description || '',
         price: item?.price || 0,
+        quantity: item?.quantity || 0,
         category: item?.category || '',
         imageUrl: item?.imageUrl || '',
     });
@@ -126,31 +129,44 @@ export function MenuItemForm({ item, categories, onSave, onCancel }: MenuItemFor
                 </FormItem>
             )}
             />
-            <FormField
-                control={form.control}
-                name="category"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Category</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                        <SelectTrigger>
-                            <SelectValue placeholder="Select a category" />
-                        </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                        {categories.map(category => (
-                            <SelectItem key={category.id} value={category.name}>
-                            {category.name}
-                            </SelectItem>
-                        ))}
-                        </SelectContent>
-                    </Select>
-                    <FormMessage />
-                    </FormItem>
-                )}
+             <FormField
+            control={form.control}
+            name="quantity"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Quantity</FormLabel>
+                <FormControl>
+                    <Input type="number" placeholder="10" {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
             />
         </div>
+        <FormField
+            control={form.control}
+            name="category"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Category</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                    <SelectTrigger>
+                        <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                    {categories.map(category => (
+                        <SelectItem key={category.id} value={category.name}>
+                        {category.name}
+                        </SelectItem>
+                    ))}
+                    </SelectContent>
+                </Select>
+                <FormMessage />
+                </FormItem>
+            )}
+        />
         <FormItem>
             <FormLabel>Image</FormLabel>
             {imageUrlValue && (

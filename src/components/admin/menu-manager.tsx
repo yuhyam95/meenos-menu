@@ -40,6 +40,7 @@ import {
     DropdownMenuTrigger,
   } from "@/components/ui/dropdown-menu"
 import { getMenuItems, addMenuItem, updateMenuItem, deleteMenuItem, getFoodCategories } from '@/app/actions';
+import { Badge } from '../ui/badge';
   
 
 export function MenuManager() {
@@ -109,17 +110,18 @@ export function MenuManager() {
               <TableHead>Name</TableHead>
               <TableHead>Category</TableHead>
               <TableHead>Price</TableHead>
+              <TableHead>Quantity</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
                 <TableRow>
-                    <TableCell colSpan={5} className="text-center h-24">Loading menu items...</TableCell>
+                    <TableCell colSpan={6} className="text-center h-24">Loading menu items...</TableCell>
                 </TableRow>
             ) : menuItems.length === 0 ? (
                 <TableRow>
-                    <TableCell colSpan={5} className="text-center h-24">No menu items found.</TableCell>
+                    <TableCell colSpan={6} className="text-center h-24">No menu items found.</TableCell>
                 </TableRow>
             ) : (
                 menuItems.map((item) => (
@@ -139,6 +141,11 @@ export function MenuManager() {
                     <TableCell className="text-muted-foreground">{item.category}</TableCell>
                     <TableCell className="text-muted-foreground">
                         {item.price.toLocaleString('en-NG', { style: 'currency', currency: 'NGN' })}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={item.quantity > 0 ? 'default' : 'destructive'}>
+                        {item.quantity > 0 ? `${item.quantity} in stock` : 'Out of Stock'}
+                      </Badge>
                     </TableCell>
                     <TableCell className="text-right">
                     <DropdownMenu>

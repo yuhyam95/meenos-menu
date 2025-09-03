@@ -2,17 +2,19 @@
 import { Facebook, Instagram, Twitter } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { getStoreSettings } from '@/app/actions';
+import type { StoreSetting } from '@/lib/types';
 
-export async function Footer() {
-  const settings = await getStoreSettings();
+interface FooterProps {
+  storeSettings: StoreSetting | null;
+}
 
-  const address = settings?.address || "123 Foodie Lane, Lekki, Lagos";
-  const phone = settings?.phone || "+234 801 234 5678";
-  const email = settings?.email || "orders@meenos.ng";
-  const facebookUrl = settings?.facebookUrl || "#";
-  const twitterUrl = settings?.twitterUrl || "#";
-  const instagramUrl = settings?.instagramUrl || "#";
+export function Footer({ storeSettings }: FooterProps) {
+  const address = storeSettings?.address || "123 Foodie Lane, Lekki, Lagos";
+  const phone = storeSettings?.phone || "+234 801 234 5678";
+  const email = storeSettings?.email || "orders@meenos.ng";
+  const facebookUrl = storeSettings?.facebookUrl || "#";
+  const twitterUrl = storeSettings?.twitterUrl || "#";
+  const instagramUrl = storeSettings?.instagramUrl || "#";
 
   return (
     <footer className="bg-secondary text-secondary-foreground">

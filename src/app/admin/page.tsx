@@ -8,7 +8,7 @@ import { ArrowRight } from "lucide-react";
 
 export default function AdminPage() {
   return (
-    <div className="flex flex-1 items-center justify-center">
+    <div className="flex flex-1 items-center justify-center -mt-14 md:mt-0">
         <div className="text-center">
             <h1 className="font-headline text-4xl font-bold tracking-tight">
                 Welcome to your Dashboard

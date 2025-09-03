@@ -3,8 +3,8 @@ import { MenuManager } from "@/components/admin/menu-manager";
 
 export default function MenuManagementPage() {
     return (
-        <div className="container mx-auto px-4 py-8">
-            <header className="mb-8">
+        <div className="space-y-8">
+            <header>
                 <h1 className="font-headline text-4xl font-bold tracking-tight">
                     Menu Management
                 </h1>

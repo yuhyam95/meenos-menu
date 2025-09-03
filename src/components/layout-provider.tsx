@@ -4,8 +4,9 @@
 import { usePathname } from 'next/navigation';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
+import { StoreSetting } from '@/lib/types';
 
-export function LayoutProvider({ children }: { children: React.ReactNode }) {
+export function LayoutProvider({ children, storeSettings }: { children: React.ReactNode, storeSettings: StoreSetting | null }) {
     const pathname = usePathname();
     const isAdminPage = pathname.startsWith('/admin');
     const isLoginPage = pathname === '/login';
@@ -14,7 +15,7 @@ export function LayoutProvider({ children }: { children: React.ReactNode }) {
         <div className="relative flex min-h-screen flex-col">
             {!isAdminPage && !isLoginPage && <Header />}
             <main className="flex-1">{children}</main>
-            {!isAdminPage && !isLoginPage && <Footer />}
+            {!isAdminPage && !isLoginPage && <Footer storeSettings={storeSettings} />}
         </div>
     )
 }

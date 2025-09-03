@@ -5,8 +5,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export default function DeliveryManagementPage() {
     return (
-        <div className="container mx-auto px-4 py-8">
-            <header className="mb-8">
+        <div className="space-y-8">
+            <header>
                 <h1 className="font-headline text-4xl font-bold tracking-tight">
                     Delivery Price Management
                 </h1>

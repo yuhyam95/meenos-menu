@@ -5,17 +5,21 @@ import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/toaster';
 import { CartProvider } from '@/providers/cart-provider';
 import { LayoutProvider } from '@/components/layout-provider';
+import { getStoreSettings } from './actions';
+import { StoreSetting } from '@/lib/types';
 
 export const metadata: Metadata = {
   title: 'meenos.ng',
   description: 'The easiest way to manage your menu and receive orders.',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const storeSettings: StoreSetting | null = await getStoreSettings();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -29,7 +33,7 @@ export default function RootLayout({
         )}
       >
         <CartProvider>
-            <LayoutProvider>
+            <LayoutProvider storeSettings={storeSettings}>
               {children}
             </LayoutProvider>
           <Toaster />

@@ -5,8 +5,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export default function UserManagementPage() {
     return (
-        <div className="container mx-auto px-4 py-8">
-            <header className="mb-8">
+        <div className="space-y-8">
+            <header>
                 <h1 className="font-headline text-4xl font-bold tracking-tight">
                     User Management
                 </h1>

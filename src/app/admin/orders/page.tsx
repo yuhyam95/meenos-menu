@@ -71,8 +71,8 @@ export default function OrdersPage() {
 
 
     return (
-    <div className="container mx-auto px-4 py-8">
-      <header className="mb-8">
+    <div className="space-y-8">
+      <header>
         <h1 className="font-headline text-4xl font-bold tracking-tight">
           Incoming Orders
         </h1>
@@ -81,7 +81,7 @@ export default function OrdersPage() {
         </p>
       </header>
 
-      <div className="grid gap-8 md:grid-cols-3 lg:grid-cols-4 h-[calc(100vh-12rem)]">
+      <div className="grid gap-8 md:grid-cols-3 lg:grid-cols-4 h-[calc(100vh-16rem)]">
         <div className="md:col-span-1 lg:col-span-1 h-full">
             <Card className="h-full flex flex-col">
                 <CardHeader>

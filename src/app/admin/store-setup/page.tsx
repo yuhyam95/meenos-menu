@@ -1,4 +1,9 @@
 
+
+import { StoreSetupForm } from "@/components/admin/store-setup-form";
+import { Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+
 export default function StoreSetupPage() {
     return (
         <div className="container mx-auto px-4 py-8">
@@ -11,8 +16,11 @@ export default function StoreSetupPage() {
                 </p>
             </header>
             <section>
-                {/* Store setup form components will go here */}
+                <Suspense fallback={<Skeleton className="h-96 w-full" />}>
+                    <StoreSetupForm />
+                </Suspense>
             </section>
         </div>
     )
 }
+

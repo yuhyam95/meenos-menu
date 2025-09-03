@@ -1,9 +1,10 @@
 
+
 'use server';
 
 import { revalidatePath } from 'next/cache';
 import clientPromise from '@/lib/db';
-import type { DeliveryLocation, FoodItem, FoodCategory, Order, OrderStatus } from '@/lib/types';
+import type { DeliveryLocation, FoodItem, FoodCategory, Order, OrderStatus, StoreSetting } from '@/lib/types';
 import { Collection, ObjectId } from 'mongodb';
 
 async function getDeliveryCollection(): Promise<Collection<DeliveryLocation>> {
@@ -28,6 +29,12 @@ async function getOrdersCollection(): Promise<Collection<Omit<Order, 'id'>>> {
   const client = await clientPromise;
   const db = client.db('meenos');
   return db.collection<Omit<Order, 'id'>>('orders');
+}
+
+async function getStoreSettingsCollection(): Promise<Collection<StoreSetting>> {
+    const client = await clientPromise;
+    const db = client.db('meenos');
+    return db.collection<StoreSetting>('store_settings');
 }
 
 
@@ -167,4 +174,24 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus): P
   const collection = await getOrdersCollection();
   await collection.updateOne({ _id: new ObjectId(orderId) }, { $set: { status } });
   revalidatePath('/admin/orders');
+}
+
+// Store Settings Actions
+export async function getStoreSettings(): Promise<StoreSetting | null> {
+    const collection = await getStoreSettingsCollection();
+    const settings = await collection.findOne({});
+    if (!settings) {
+        return null;
+    }
+    const { _id, ...rest } = settings;
+    return { ...rest, id: _id!.toString() };
+}
+
+export async function saveStoreSettings(settingsData: Omit<StoreSetting, 'id' | '_id'>): Promise<void> {
+    const collection = await getStoreSettingsCollection();
+    // Use upsert to create if not exists, or update if it does.
+    // We assume there's only one settings document.
+    await collection.updateOne({}, { $set: settingsData }, { upsert: true });
+    revalidatePath('/admin/store-setup');
+    revalidatePath('/');
 }

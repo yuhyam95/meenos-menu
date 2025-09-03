@@ -1,4 +1,5 @@
 
+
 import type { ObjectId } from 'mongodb';
 
 export interface FoodItem {
@@ -45,3 +46,13 @@ export interface Order {
   }
   
   export type OrderStatus = 'Pending' | 'In Progress' | 'Delivered' | 'Cancelled';
+
+export interface StoreSetting {
+  _id?: ObjectId;
+  id?: string;
+  accountName?: string;
+  accountNumber?: string;
+  bankName?: string;
+  headerImageUrl?: string;
+}
+

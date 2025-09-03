@@ -26,7 +26,7 @@ export default function AdminLayout({
       <SidebarProvider>
         <div className="flex flex-1">
           <Sidebar>
-              <SidebarHeader>
+              <SidebarHeader className="h-16 flex-shrink-0">
               </SidebarHeader>
               <SidebarContent>
               <SidebarMenu>

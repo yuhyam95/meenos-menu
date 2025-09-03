@@ -2,7 +2,7 @@
 'use client';
 
 import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar";
-import { UtensilsCrossed, ShoppingCart, Truck, Tags } from 'lucide-react';
+import { UtensilsCrossed, ShoppingCart, Truck, Tags, Settings } from 'lucide-react';
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -20,6 +20,7 @@ export default function AdminLayout({
     { href: '/admin/menu', label: 'Menu Management', icon: UtensilsCrossed },
     { href: '/admin/categories', label: 'Category Management', icon: Tags },
     { href: '/admin/delivery', label: 'Delivery Management', icon: Truck },
+    { href: '/admin/store-setup', label: 'Store Setup', icon: Settings },
   ];
 
   return (
@@ -34,7 +35,7 @@ export default function AdminLayout({
                   <SidebarMenuItem key={item.href}>
                       <Link href={item.href}>
                           <SidebarMenuButton 
-                              isActive={pathname === item.href}
+                              isActive={pathname.startsWith(item.href)}
                               tooltip={item.label}
                           >
                               <item.icon />

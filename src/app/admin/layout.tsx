@@ -31,7 +31,6 @@ export default function AdminLayout({
                   <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
                       <Settings className="h-5 w-5" />
                   </div>
-                  <span className="text-lg font-semibold">Admin Panel</span>
                 </div>
               </SidebarHeader>
               <SidebarContent>

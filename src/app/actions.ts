@@ -5,11 +5,6 @@ import { revalidatePath } from 'next/cache';
 import clientPromise from '@/lib/db';
 import type { DeliveryLocation, FoodItem, FoodCategory, Order, OrderStatus, StoreSetting, User } from '@/lib/types';
 import { Collection, ObjectId } from 'mongodb';
-import { redirect } from 'next/navigation';
-import { SignJWT, jwtVerify } from 'jose';
-import { cookies } from 'next/headers';
-
-const secretKey = new TextEncoder().encode(process.env.JWT_SECRET_KEY || 'your-super-secret-jwt-key');
 
 async function getDeliveryCollection(): Promise<Collection<DeliveryLocation>> {
   const client = await clientPromise;
@@ -211,6 +206,7 @@ export async function getUsers(): Promise<User[]> {
     const collection = await getUsersCollection();
     const users = await collection.find({}).toArray();
     return users.map(user => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { _id, password, ...rest } = user;
         return { ...rest, id: _id!.toString() };
     });
@@ -224,59 +220,4 @@ export async function addUser(userData: Omit<User, 'id' | '_id'>): Promise<void>
     // await collection.insertOne({ ...userData, password: hashedPassword });
     await collection.insertOne(userData);
     revalidatePath('/admin/users');
-}
-
-
-// Auth Actions
-export async function login(formData: FormData) {
-  const username = formData.get('username') as string;
-  const password = formData.get('password') as string;
-
-  if (!username || !password) {
-    return { error: 'Invalid credentials' };
-  }
-
-  const usersCollection = await getUsersCollection();
-  const user = await usersCollection.findOne({
-    $or: [{ email: username }, { phone: username }],
-  });
-
-  if (!user || user.password !== password) {
-    return { error: 'Invalid credentials' };
-  }
-
-  const { password: userPassword, ...payload } = user;
-
-  const session = await new SignJWT(payload)
-    .setProtectedHeader({ alg: 'HS256' })
-    .setIssuedAt()
-    .setExpirationTime('1h')
-    .sign(secretKey);
-
-  cookies().set('session', session, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 60 * 60, // 1 hour
-    path: '/',
-  });
-
-  redirect('/admin');
-}
-
-export async function logout() {
-  cookies().set('session', '', { expires: new Date(0) });
-  redirect('/login');
-}
-
-export async function getSession() {
-  const sessionCookie = cookies().get('session')?.value;
-  if (!sessionCookie) return null;
-  try {
-    const { payload } = await jwtVerify(sessionCookie, secretKey, {
-      algorithms: ['HS256'],
-    });
-    return payload;
-  } catch (error) {
-    return null;
-  }
 }

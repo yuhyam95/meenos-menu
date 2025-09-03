@@ -6,7 +6,7 @@ import { UtensilsCrossed, ShoppingCart, Truck, Tags, Settings, Users, LogOut } f
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
-import { logout } from "@/app/actions";
+import { logout } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 
 

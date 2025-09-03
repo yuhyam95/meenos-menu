@@ -9,7 +9,7 @@ export interface CartContextType {
   cartItems: CartItem[];
   addToCart: (item: FoodItem) => void;
   removeFromCart: (itemId: string) => void;
-  updateQuantity: (itemId: string, quantity: number, item: FoodItem) => void;
+  updateQuantity: (itemId: string, quantity: number) => void;
   clearCart: () => void;
   cartCount: number;
   cartTotal: number;
@@ -52,7 +52,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
         if (existingItem.quantity + 1 > item.quantity) {
           toast({
             title: "Not enough stock",
-            description: `You cannot add more of ${item.name}.`,
+            description: `Only ${item.quantity} of ${item.name} available.`,
             variant: "destructive",
           });
           return prevItems;
@@ -81,27 +81,33 @@ export const CartProvider = ({ children }: CartProviderProps) => {
       });
   };
 
-  const updateQuantity = (itemId: string, quantity: number, item: FoodItem) => {
-    if (quantity > item.quantity) {
-        toast({
-            title: "Not enough stock",
-            description: `You cannot add more of ${item.name}. Only ${item.quantity} available.`,
-            variant: "destructive",
-        });
-        // Reset to max available quantity
-        setCartItems((prevItems) =>
-            prevItems.map((i) => (i.id === itemId ? { ...i, quantity: item.quantity } : i))
-        );
-        return;
-    }
-
+  const updateQuantity = (itemId: string, quantity: number) => {
     if (quantity <= 0) {
       removeFromCart(itemId);
-    } else {
-      setCartItems((prevItems) =>
-        prevItems.map((i) => (i.id === itemId ? { ...i, quantity } : i))
-      );
+      return;
     }
+
+    setCartItems((prevItems) => {
+        const itemToUpdate = prevItems.find((i) => i.id === itemId);
+        if (!itemToUpdate) return prevItems;
+
+        // The original product info (including max quantity) is stored in the cart item itself.
+        if (quantity > itemToUpdate.quantity) {
+            toast({
+                title: "Not enough stock",
+                description: `You cannot add more of ${itemToUpdate.name}. Only ${itemToUpdate.quantity} available.`,
+                variant: "destructive",
+            });
+            // Reset to max available quantity
+            return prevItems.map((i) =>
+              i.id === itemId ? { ...i, quantity: itemToUpdate.quantity } : i
+            );
+        }
+
+        return prevItems.map((i) =>
+            i.id === itemId ? { ...i, quantity } : i
+        );
+    });
   };
 
   const clearCart = () => {

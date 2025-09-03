@@ -2,11 +2,12 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { SignJWT, jwtVerify } from 'jose';
+import { SignJWT } from 'jose';
 import { cookies } from 'next/headers';
 import type { User } from '@/lib/types';
 import { Collection } from 'mongodb';
 import clientPromise from '@/lib/db';
+import { getSession } from './session';
 
 
 const secretKey = new TextEncoder().encode(process.env.JWT_SECRET_KEY || 'your-super-secret-jwt-key');
@@ -19,7 +20,7 @@ async function getUsersCollection(): Promise<Collection<Omit<User, 'id'>>> {
 
 
 // Auth Actions
-export async function login(formData: FormData) {
+export async function login(_prevState: unknown, formData: FormData) {
   const username = formData.get('username') as string;
   const password = formData.get('password') as string;
 
@@ -60,15 +61,4 @@ export async function logout() {
   redirect('/login');
 }
 
-export async function getSession() {
-  const sessionCookie = cookies().get('session')?.value;
-  if (!sessionCookie) return null;
-  try {
-    const { payload } = await jwtVerify(sessionCookie, secretKey, {
-      algorithms: ['HS256'],
-    });
-    return payload;
-  } catch (error) {
-    return null;
-  }
-}
+export { getSession };

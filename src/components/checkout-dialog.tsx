@@ -12,13 +12,22 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useCart } from '@/hooks/use-cart';
 import { useToast } from '@/hooks/use-toast';
-import type { DeliveryLocation } from '@/lib/types';
-import { getDeliveryLocations, addOrder } from '@/app/actions';
+import type { DeliveryLocation, StoreSetting } from '@/lib/types';
+import { getDeliveryLocations, addOrder, getStoreSettings } from '@/app/actions';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export function CheckoutDialog() {
@@ -32,15 +41,20 @@ export function CheckoutDialog() {
   const [deliveryLocations, setDeliveryLocations] = useState<DeliveryLocation[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<string | undefined>();
   const [deliveryFee, setDeliveryFee] = useState(0);
+  const [storeSettings, setStoreSettings] = useState<StoreSetting | null>(null);
+  const [isPaymentDetailsOpen, setIsPaymentDetailsOpen] = useState(false);
 
   useEffect(() => {
-    async function fetchLocations() {
-      const locations = await getDeliveryLocations();
-      setDeliveryLocations(locations);
+    async function fetchInitialData() {
+      const settings = await getStoreSettings();
+      setStoreSettings(settings);
+
+      if (orderType === 'delivery') {
+        const locations = await getDeliveryLocations();
+        setDeliveryLocations(locations);
+      }
     }
-    if (orderType === 'delivery') {
-      fetchLocations();
-    }
+    fetchInitialData();
   }, [orderType]);
   
   const handleLocationChange = (locationId: string) => {
@@ -65,23 +79,29 @@ export function CheckoutDialog() {
 
     await addOrder(orderData);
 
+    setIsOpen(false); // Close the checkout dialog
+    setIsPaymentDetailsOpen(true); // Open the payment details dialog
+  };
+
+  const handlePaymentComplete = () => {
     toast({
-      title: 'Order Placed Successfully!',
-      description: 'Thank you for your order. We will process it shortly.',
+        title: 'Order Placed Successfully!',
+        description: 'Thank you for your order. We will process it shortly.',
     });
     clearCart();
-    setIsOpen(false);
+    setIsPaymentDetailsOpen(false);
     setName('');
     setPhone('');
     setAddress('');
     setSelectedLocation(undefined);
     setDeliveryFee(0);
-  };
+  }
 
   const finalTotal = cartTotal + (orderType === 'delivery' ? deliveryFee : 0);
   const isOrderButtonDisabled = !name || !phone || (orderType === 'delivery' && (!address || !selectedLocation)) || cartItems.length === 0;
 
   return (
+    <>
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button className="w-full" size="lg" disabled={cartItems.length === 0}>
@@ -159,5 +179,40 @@ export function CheckoutDialog() {
         </DialogFooter>
       </DialogContent>
     </Dialog>
+
+    <AlertDialog open={isPaymentDetailsOpen} onOpenChange={setIsPaymentDetailsOpen}>
+        <AlertDialogContent>
+            <AlertDialogHeader>
+                <AlertDialogTitle>Make Payment</AlertDialogTitle>
+                <AlertDialogDescription>
+                    Please transfer the total amount to the bank account below to complete your order.
+                </AlertDialogDescription>
+            </AlertDialogHeader>
+            <div className="my-4 space-y-3 rounded-lg border bg-secondary/50 p-4">
+                <div className="flex justify-between">
+                    <span className="text-muted-foreground">Bank:</span>
+                    <span className="font-semibold">{storeSettings?.bankName || 'N/A'}</span>
+                </div>
+                <div className="flex justify-between">
+                    <span className="text-muted-foreground">Account Name:</span>
+                    <span className="font-semibold">{storeSettings?.accountName || 'N/A'}</span>
+                </div>
+                <div className="flex justify-between">
+                    <span className="text-muted-foreground">Account Number:</span>
+                    <span className="font-semibold">{storeSettings?.accountNumber || 'N/A'}</span>
+                </div>
+                <div className="flex justify-between text-lg font-bold pt-2 border-t">
+                    <span>Total:</span>
+                    <span>{finalTotal.toLocaleString('en-NG', { style: 'currency', currency: 'NGN' })}</span>
+                </div>
+            </div>
+            <AlertDialogFooter>
+                <AlertDialogAction onClick={handlePaymentComplete}>
+                    I have made the payment
+                </AlertDialogAction>
+            </AlertDialogFooter>
+        </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 }

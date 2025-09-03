@@ -25,13 +25,8 @@ export default function AdminLayout({
   return (
       <SidebarProvider>
         <div className="flex flex-1">
-          <Sidebar className="pt-16">
+          <Sidebar>
               <SidebarHeader>
-                <div className="flex items-center gap-2">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                      <Settings className="h-5 w-5" />
-                  </div>
-                </div>
               </SidebarHeader>
               <SidebarContent>
               <SidebarMenu>
@@ -51,7 +46,7 @@ export default function AdminLayout({
               </SidebarMenu>
               </SidebarContent>
           </Sidebar>
-          <SidebarInset className="pt-16">
+          <SidebarInset>
               {children}
           </SidebarInset>
         </div>

@@ -9,7 +9,7 @@ export interface CartContextType {
   cartItems: CartItem[];
   addToCart: (item: FoodItem) => void;
   removeFromCart: (itemId: string) => void;
-  updateQuantity: (itemId: string, quantity: number) => void;
+  updateQuantity: (itemId: string, quantity: number, item: FoodItem) => void;
   clearCart: () => void;
   cartCount: number;
   cartTotal: number;
@@ -49,7 +49,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     setCartItems((prevItems) => {
       const existingItem = prevItems.find((i) => i.id === item.id);
       if (existingItem) {
-        if (existingItem.quantity >= item.quantity) {
+        if (existingItem.quantity + 1 > item.quantity) {
           toast({
             title: "Not enough stock",
             description: `You cannot add more of ${item.name}.`,
@@ -81,21 +81,16 @@ export const CartProvider = ({ children }: CartProviderProps) => {
       });
   };
 
-  const updateQuantity = (itemId: string, quantity: number) => {
-    const itemInCart = cartItems.find(i => i.id === itemId);
-    const originalItem = itemInCart; // We need the original stock level
-
-    if (!originalItem) return;
-
-    if (quantity > originalItem.quantity) {
+  const updateQuantity = (itemId: string, quantity: number, item: FoodItem) => {
+    if (quantity > item.quantity) {
         toast({
             title: "Not enough stock",
-            description: `You cannot add more of ${originalItem.name}. Only ${originalItem.quantity} available.`,
+            description: `You cannot add more of ${item.name}. Only ${item.quantity} available.`,
             variant: "destructive",
         });
         // Reset to max available quantity
         setCartItems((prevItems) =>
-            prevItems.map((i) => (i.id === itemId ? { ...i, quantity: originalItem.quantity } : i))
+            prevItems.map((i) => (i.id === itemId ? { ...i, quantity: item.quantity } : i))
         );
         return;
     }

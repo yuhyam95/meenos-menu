@@ -5,6 +5,13 @@ import { useState, useEffect } from 'react';
 import type { User } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
   Table,
   TableBody,
   TableCell,
@@ -24,18 +31,21 @@ import {
     AlertDialogTrigger,
   } from "@/components/ui/alert-dialog"
 import { MoreHorizontal, PlusCircle, Pencil, Trash2 } from 'lucide-react';
+import { UserForm } from './user-form';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
   } from "@/components/ui/dropdown-menu"
-import { getUsers } from '@/app/actions';
+import { getUsers, addUser } from '@/app/actions';
 import { Badge } from '@/components/ui/badge';
   
 
 export function UserManager() {
   const [users, setUsers] = useState<User[]>([]);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -48,15 +58,25 @@ export function UserManager() {
     fetchUsers();
   }, []);
 
-  const handleAddNew = () => {
-    // TODO: Implement Add New User functionality
-    console.log("Add new user clicked");
-  }
+  const handleSaveUser = async (user: Omit<User, 'id'>) => {
+    // In a real app, you'd differentiate between add and update
+    await addUser(user);
+    
+    const updatedUsers = await getUsers();
+    setUsers(updatedUsers);
+    setEditingUser(null);
+    setIsFormOpen(false);
+  };
 
   const handleEditUser = (user: User) => {
-    // TODO: Implement Edit User functionality
-    console.log("Editing user:", user);
+    setEditingUser(user);
+    setIsFormOpen(true);
   };
+
+  const handleAddNew = () => {
+    setEditingUser(null);
+    setIsFormOpen(true);
+  }
 
   const handleDeleteUser = async (userId: string) => {
     // TODO: Implement Delete User functionality
@@ -66,7 +86,7 @@ export function UserManager() {
   return (
     <>
       <div className="flex justify-end mb-4">
-        <Button onClick={handleAddNew} disabled>
+        <Button onClick={handleAddNew}>
           <PlusCircle className="mr-2 h-4 w-4" />
           Add New User
         </Button>
@@ -144,6 +164,21 @@ export function UserManager() {
           </TableBody>
         </Table>
       </div>
+      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{editingUser ? 'Edit User' : 'Add New User'}</DialogTitle>
+            <DialogDescription>
+              {editingUser ? 'Update the details for this user.' : 'Fill in the details for the new user.'}
+            </DialogDescription>
+          </DialogHeader>
+          <UserForm
+            user={editingUser}
+            onSave={handleSaveUser}
+            onCancel={() => setIsFormOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

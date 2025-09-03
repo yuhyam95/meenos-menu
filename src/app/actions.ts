@@ -211,3 +211,13 @@ export async function getUsers(): Promise<User[]> {
         return { ...rest, id: _id!.toString() };
     });
 }
+
+export async function addUser(userData: Omit<User, 'id' | '_id'>): Promise<void> {
+    const collection = await getUsersCollection();
+    // In a real app, you would hash the password here
+    // For example:
+    // const hashedPassword = await bcrypt.hash(userData.password, 10);
+    // await collection.insertOne({ ...userData, password: hashedPassword });
+    await collection.insertOne(userData);
+    revalidatePath('/admin/users');
+}

@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { createContext, useState, useEffect, type ReactNode } from 'react';
@@ -36,18 +37,39 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   }, [cartItems]);
 
   const addToCart = (item: FoodItem) => {
+    if (item.quantity === 0) {
+        toast({
+            title: "Out of stock",
+            description: `${item.name} is currently out of stock.`,
+            variant: "destructive",
+        });
+        return;
+    }
+
     setCartItems((prevItems) => {
       const existingItem = prevItems.find((i) => i.id === item.id);
       if (existingItem) {
+        if (existingItem.quantity >= item.quantity) {
+          toast({
+            title: "Not enough stock",
+            description: `You cannot add more of ${item.name}.`,
+            variant: "destructive",
+          });
+          return prevItems;
+        }
+        toast({
+            title: "Added to cart",
+            description: `${item.name} has been added to your cart.`,
+        });
         return prevItems.map((i) =>
           i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
         );
       }
+      toast({
+        title: "Added to cart",
+        description: `${item.name} has been added to your cart.`,
+      });
       return [...prevItems, { ...item, quantity: 1 }];
-    });
-    toast({
-      title: "Added to cart",
-      description: `${item.name} has been added to your cart.`,
     });
   };
 
@@ -60,6 +82,24 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   };
 
   const updateQuantity = (itemId: string, quantity: number) => {
+    const itemInCart = cartItems.find(i => i.id === itemId);
+    const originalItem = itemInCart; // We need the original stock level
+
+    if (!originalItem) return;
+
+    if (quantity > originalItem.quantity) {
+        toast({
+            title: "Not enough stock",
+            description: `You cannot add more of ${originalItem.name}. Only ${originalItem.quantity} available.`,
+            variant: "destructive",
+        });
+        // Reset to max available quantity
+        setCartItems((prevItems) =>
+            prevItems.map((i) => (i.id === itemId ? { ...i, quantity: originalItem.quantity } : i))
+        );
+        return;
+    }
+
     if (quantity <= 0) {
       removeFromCart(itemId);
     } else {

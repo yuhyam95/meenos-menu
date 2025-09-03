@@ -4,7 +4,7 @@
 
 import { revalidatePath } from 'next/cache';
 import clientPromise from '@/lib/db';
-import type { DeliveryLocation, FoodItem, FoodCategory, Order, OrderStatus, StoreSetting } from '@/lib/types';
+import type { DeliveryLocation, FoodItem, FoodCategory, Order, OrderStatus, StoreSetting, User } from '@/lib/types';
 import { Collection, ObjectId } from 'mongodb';
 
 async function getDeliveryCollection(): Promise<Collection<DeliveryLocation>> {
@@ -35,6 +35,12 @@ async function getStoreSettingsCollection(): Promise<Collection<StoreSetting>> {
     const client = await clientPromise;
     const db = client.db('meenos');
     return db.collection<StoreSetting>('store_settings');
+}
+
+async function getUsersCollection(): Promise<Collection<Omit<User, 'id'>>> {
+    const client = await clientPromise;
+    const db = client.db('meenos');
+    return db.collection<Omit<User, 'id'>>('users');
 }
 
 
@@ -194,4 +200,14 @@ export async function saveStoreSettings(settingsData: Omit<StoreSetting, 'id' | 
     await collection.updateOne({}, { $set: settingsData }, { upsert: true });
     revalidatePath('/admin/store-setup');
     revalidatePath('/');
+}
+
+// User Actions
+export async function getUsers(): Promise<User[]> {
+    const collection = await getUsersCollection();
+    const users = await collection.find({}).toArray();
+    return users.map(user => {
+        const { _id, ...rest } = user;
+        return { ...rest, id: _id!.toString() };
+    });
 }

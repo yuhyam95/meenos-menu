@@ -56,3 +56,10 @@ export interface StoreSetting {
   headerImageUrl?: string;
 }
 
+export interface User {
+    _id?: ObjectId;
+    id: string;
+    name: string;
+    email: string;
+    role: 'Admin' | 'User';
+}

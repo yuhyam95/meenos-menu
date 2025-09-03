@@ -1,9 +1,19 @@
 
-import { Facebook, Instagram, Twitter, UtensilsCrossed } from 'lucide-react';
+import { Facebook, Instagram, Twitter } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { getStoreSettings } from '@/app/actions';
 
-export function Footer() {
+export async function Footer() {
+  const settings = await getStoreSettings();
+
+  const address = settings?.address || "123 Foodie Lane, Lekki, Lagos";
+  const phone = settings?.phone || "+234 801 234 5678";
+  const email = settings?.email || "orders@meenos.ng";
+  const facebookUrl = settings?.facebookUrl || "#";
+  const twitterUrl = settings?.twitterUrl || "#";
+  const instagramUrl = settings?.instagramUrl || "#";
+
   return (
     <footer className="bg-secondary text-secondary-foreground">
       <div className="container mx-auto px-4 py-8 md:py-12">
@@ -20,19 +30,18 @@ export function Footer() {
           <div className="text-center md:text-left">
             <h3 className="mb-4 text-lg font-semibold">Contact Us</h3>
             <address className="not-italic">
-              <p>123 Foodie Lane, Lekki, Lagos</p>
-              <p>Nigeria</p>
+              <p>{address}</p>
               <p className="mt-2">
-                <a href="tel:+2348012345678" className="hover:underline">
-                  +234 801 234 5678
+                <a href={`tel:${phone}`} className="hover:underline">
+                  {phone}
                 </a>
               </p>
               <p>
                 <a
-                  href="mailto:orders@meenos.ng"
+                  href={`mailto:${email}`}
                   className="hover:underline"
                 >
-                  orders@meenos.ng
+                  {email}
                 </a>
               </p>
             </address>
@@ -41,15 +50,15 @@ export function Footer() {
           <div className="text-center md:text-left">
             <h3 className="mb-4 text-lg font-semibold">Follow Us</h3>
             <div className="flex justify-center gap-4 md:justify-start">
-              <Link href="#" className="text-secondary-foreground hover:text-primary">
+              <Link href={facebookUrl} className="text-secondary-foreground hover:text-primary">
                 <Facebook className="h-6 w-6" />
                 <span className="sr-only">Facebook</span>
               </Link>
-              <Link href="#" className="text-secondary-foreground hover:text-primary">
+              <Link href={twitterUrl} className="text-secondary-foreground hover:text-primary">
                 <Twitter className="h-6 w-6" />
                 <span className="sr-only">Twitter</span>
               </Link>
-              <Link href="#" className="text-secondary-foreground hover:text-primary">
+              <Link href={instagramUrl} className="text-secondary-foreground hover:text-primary">
                 <Instagram className="h-6 w-6" />
                 <span className="sr-only">Instagram</span>
               </Link>

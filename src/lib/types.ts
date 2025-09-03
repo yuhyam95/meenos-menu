@@ -55,6 +55,12 @@ export interface StoreSetting {
   accountNumber?: string;
   bankName?: string;
   headerImageUrl?: string;
+  address?: string;
+  phone?: string;
+  email?: string;
+  facebookUrl?: string;
+  twitterUrl?: string;
+  instagramUrl?: string;
 }
 
 export interface User {

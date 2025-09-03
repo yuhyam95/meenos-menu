@@ -26,6 +26,12 @@ const formSchema = z.object({
   accountNumber: z.string().optional(),
   bankName: z.string().optional(),
   headerImageUrl: z.string().optional(),
+  address: z.string().optional(),
+  phone: z.string().optional(),
+  email: z.string().email({ message: "Please enter a valid email." }).optional().or(z.literal('')),
+  facebookUrl: z.string().url().optional().or(z.literal('')),
+  twitterUrl: z.string().url().optional().or(z.literal('')),
+  instagramUrl: z.string().url().optional().or(z.literal('')),
 });
 
 export function StoreSetupForm() {
@@ -39,6 +45,12 @@ export function StoreSetupForm() {
       accountNumber: '',
       bankName: '',
       headerImageUrl: '',
+      address: '',
+      phone: '',
+      email: '',
+      facebookUrl: '',
+      twitterUrl: '',
+      instagramUrl: '',
     },
   });
 
@@ -52,6 +64,12 @@ export function StoreSetupForm() {
           accountNumber: settings.accountNumber || '',
           bankName: settings.bankName || '',
           headerImageUrl: settings.headerImageUrl || '',
+          address: settings.address || '',
+          phone: settings.phone || '',
+          email: settings.email || '',
+          facebookUrl: settings.facebookUrl || '',
+          twitterUrl: settings.twitterUrl || '',
+          instagramUrl: settings.instagramUrl || '',
         });
       }
     }
@@ -130,6 +148,102 @@ export function StoreSetupForm() {
                         <FormLabel>Account Number</FormLabel>
                         <FormControl>
                             <Input placeholder="e.g., 0123456789" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader>
+                <CardTitle>Contact Information</CardTitle>
+                <CardDescription>This will be displayed in your site's footer.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                 <FormField
+                    control={form.control}
+                    name="address"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Store Address</FormLabel>
+                        <FormControl>
+                            <Input placeholder="123 Foodie Lane, Lekki, Lagos" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                 <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Public Phone Number</FormLabel>
+                        <FormControl>
+                            <Input placeholder="+234 801 234 5678" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                 <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Public Email Address</FormLabel>
+                        <FormControl>
+                            <Input placeholder="orders@meenos.ng" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader>
+                <CardTitle>Social Media</CardTitle>
+                <CardDescription>Enter the full URLs for your social media profiles.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <FormField
+                    control={form.control}
+                    name="facebookUrl"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Facebook URL</FormLabel>
+                        <FormControl>
+                            <Input placeholder="https://facebook.com/meenos" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                 <FormField
+                    control={form.control}
+                    name="twitterUrl"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Twitter / X URL</FormLabel>
+                        <FormControl>
+                            <Input placeholder="https://x.com/meenos" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                 <FormField
+                    control={form.control}
+                    name="instagramUrl"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Instagram URL</FormLabel>
+                        <FormControl>
+                            <Input placeholder="https://instagram.com/meenos" {...field} />
                         </FormControl>
                         <FormMessage />
                         </FormItem>

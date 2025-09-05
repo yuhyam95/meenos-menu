@@ -24,7 +24,7 @@ import {
     SelectValue,
   } from '@/components/ui/select';
 import { useEffect } from 'react';
-import Image from 'next/image';
+import { SimpleImageUpload } from '@/components/ui/simple-image-upload';
 
 const formSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
@@ -66,15 +66,8 @@ export function MenuItemForm({ item, categories, onSave, onCancel }: MenuItemFor
     });
   }, [item, form]);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        form.setValue('imageUrl', reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
+  const handleImageChange = (url: string) => {
+    form.setValue('imageUrl', url);
   };
 
   function onSubmit(values: z.infer<typeof formSchema>) {
@@ -83,8 +76,6 @@ export function MenuItemForm({ item, categories, onSave, onCancel }: MenuItemFor
       id: item?.id,
     });
   }
-
-  const imageUrlValue = form.watch('imageUrl');
 
   return (
     <Form {...form}>
@@ -167,18 +158,22 @@ export function MenuItemForm({ item, categories, onSave, onCancel }: MenuItemFor
                 </FormItem>
             )}
         />
-        <FormItem>
-            <FormLabel>Image</FormLabel>
-            {imageUrlValue && (
-                <div className="relative h-40 w-full mb-2">
-                    <Image src={imageUrlValue} alt="Preview" fill className="object-contain rounded-md" sizes="100vw"/>
-                </div>
-            )}
-            <FormControl>
-              <Input type="file" accept="image/*" onChange={handleImageChange} />
-            </FormControl>
-            <FormMessage>{form.formState.errors.imageUrl?.message}</FormMessage>
-          </FormItem>
+        <FormField
+          control={form.control}
+          name="imageUrl"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <SimpleImageUpload
+                  value={field.value}
+                  onChange={handleImageChange}
+                  disabled={form.formState.isSubmitting}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <div className="flex justify-end gap-2 pt-4">
             <Button type="button" variant="ghost" onClick={onCancel}>Cancel</Button>

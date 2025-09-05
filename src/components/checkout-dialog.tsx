@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useCart } from '@/hooks/use-cart';
 import { useToast } from '@/hooks/use-toast';
@@ -38,6 +39,7 @@ export function CheckoutDialog() {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
+  const [notes, setNotes] = useState('');
   const [deliveryLocations, setDeliveryLocations] = useState<DeliveryLocation[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<string | undefined>();
   const [deliveryFee, setDeliveryFee] = useState(0);
@@ -75,6 +77,7 @@ export function CheckoutDialog() {
       total: cartTotal + deliveryFee,
       status: 'Pending' as const,
       orderType: orderType as 'delivery' | 'pickup',
+      notes: notes.trim() || undefined,
     };
 
     await addOrder(orderData);
@@ -93,6 +96,7 @@ export function CheckoutDialog() {
     setName('');
     setPhone('');
     setAddress('');
+    setNotes('');
     setSelectedLocation(undefined);
     setDeliveryFee(0);
   }
@@ -167,6 +171,16 @@ export function CheckoutDialog() {
            <div className="space-y-2">
             <Label htmlFor="phone">Phone Number</Label>
             <Input id="phone" placeholder="08012345678" value={phone} onChange={(e) => setPhone(e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="notes">Additional Notes (Optional)</Label>
+            <Textarea 
+              id="notes" 
+              placeholder="Any special instructions or requests..." 
+              value={notes} 
+              onChange={(e) => setNotes(e.target.value)}
+              className="min-h-[80px]"
+            />
           </div>
         </div>
         <DialogFooter>

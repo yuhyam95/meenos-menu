@@ -155,6 +155,12 @@ export default function OrdersPage() {
                         <p><strong>Name:</strong> {selectedOrder.customer.name}</p>
                         <p><strong>Phone:</strong> {selectedOrder.customer.phone}</p>
                         {selectedOrder.customer.address && <p><strong>Address:</strong> {selectedOrder.customer.address}</p>}
+                        {selectedOrder.notes && (
+                          <div className="mt-3 p-3 bg-muted rounded-lg">
+                            <p><strong>Additional Notes:</strong></p>
+                            <p className="text-sm mt-1 whitespace-pre-wrap">{selectedOrder.notes}</p>
+                          </div>
+                        )}
                         <p className="text-sm text-muted-foreground mt-1">
                           Ordered on: {format(new Date(selectedOrder.createdAt), "PPpp")}
                         </p>

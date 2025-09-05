@@ -44,6 +44,7 @@ export interface Order {
     total: number;
     status: 'Pending' | 'In Progress' | 'Delivered' | 'Cancelled';
     orderType: 'delivery' | 'pickup';
+    notes?: string;
     createdAt: Date;
   }
   

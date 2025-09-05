@@ -27,6 +27,12 @@ const nextConfig: NextConfig = {
         hostname: 'zenaskitchen.com',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        port: '',
+        pathname: '/**',
       }
     ],
   },

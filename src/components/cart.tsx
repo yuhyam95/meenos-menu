@@ -45,22 +45,23 @@ export function Cart() {
                       <Button
                         variant="outline"
                         size="icon"
-                        className="h-6 w-6"
+                        className="h-8 w-8"
                         onClick={() => updateQuantity(item.id, item.quantity - 1)}
                       >
                         <Minus className="h-3 w-3" />
                       </Button>
                       <Input
                         type="number"
-                        value={item.quantity}
+                        value={item.quantity || 0}
                         onChange={(e) => updateQuantity(item.id, parseInt(e.target.value) || 0)}
-                        className="h-6 w-10 text-center"
+                        className="h-8 w-12 text-center text-sm"
                         min="0"
+                        placeholder="0"
                       />
                       <Button
                         variant="outline"
                         size="icon"
-                        className="h-6 w-6"
+                        className="h-8 w-8"
                         onClick={() => updateQuantity(item.id, item.quantity + 1)}
                       >
                         <Plus className="h-3 w-3" />

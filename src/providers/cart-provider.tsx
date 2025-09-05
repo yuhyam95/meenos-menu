@@ -28,7 +28,18 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   useEffect(() => {
     const storedCart = localStorage.getItem('cart');
     if (storedCart) {
-      setCartItems(JSON.parse(storedCart));
+      try {
+        const parsedCart = JSON.parse(storedCart);
+        // Migrate existing cart items to include originalQuantity if missing
+        const migratedCart = parsedCart.map((item: any) => ({
+          ...item,
+          originalQuantity: item.originalQuantity || item.quantity
+        }));
+        setCartItems(migratedCart);
+      } catch (error) {
+        console.error('Error parsing cart from localStorage:', error);
+        setCartItems([]);
+      }
     }
   }, []);
 
@@ -49,10 +60,12 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     setCartItems((prevItems) => {
       const existingItem = prevItems.find((i) => i.id === item.id);
       if (existingItem) {
-        if (existingItem.quantity + 1 > item.quantity) {
+        // Use originalQuantity if available, otherwise fall back to the current item's quantity
+        const maxQuantity = existingItem.originalQuantity || item.quantity;
+        if (existingItem.quantity + 1 > maxQuantity) {
           toast({
             title: "Not enough stock",
-            description: `Only ${item.quantity} of ${item.name} available.`,
+            description: `Only ${maxQuantity} of ${item.name} available.`,
             variant: "destructive",
           });
           return prevItems;
@@ -62,14 +75,19 @@ export const CartProvider = ({ children }: CartProviderProps) => {
             description: `${item.name} has been added to your cart.`,
         });
         return prevItems.map((i) =>
-          i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
+          i.id === item.id ? { 
+            ...i, 
+            quantity: i.quantity + 1,
+            // Ensure originalQuantity is set for backward compatibility
+            originalQuantity: i.originalQuantity || item.quantity
+          } : i
         );
       }
       toast({
         title: "Added to cart",
         description: `${item.name} has been added to your cart.`,
       });
-      return [...prevItems, { ...item, quantity: 1 }];
+      return [...prevItems, { ...item, quantity: 1, originalQuantity: item.quantity }];
     });
   };
 
@@ -91,16 +109,17 @@ export const CartProvider = ({ children }: CartProviderProps) => {
         const itemToUpdate = prevItems.find((i) => i.id === itemId);
         if (!itemToUpdate) return prevItems;
 
-        // The original product info (including max quantity) is stored in the cart item itself.
-        if (quantity > itemToUpdate.quantity) {
+        // Check against the original product stock quantity (with backward compatibility)
+        const maxQuantity = itemToUpdate.originalQuantity || itemToUpdate.quantity;
+        if (quantity > maxQuantity) {
             toast({
                 title: "Not enough stock",
-                description: `You cannot add more of ${itemToUpdate.name}. Only ${itemToUpdate.quantity} available.`,
+                description: `You cannot add more of ${itemToUpdate.name}. Only ${maxQuantity} available.`,
                 variant: "destructive",
             });
             // Reset to max available quantity
             return prevItems.map((i) =>
-              i.id === itemId ? { ...i, quantity: itemToUpdate.quantity } : i
+              i.id === itemId ? { ...i, quantity: maxQuantity } : i
             );
         }
 

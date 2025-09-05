@@ -15,7 +15,8 @@ export interface FoodItem {
 }
 
 export interface CartItem extends FoodItem {
-  quantity: number;
+  quantity: number; // Cart quantity
+  originalQuantity: number; // Original product stock quantity
 }
 
 export interface DeliveryLocation {

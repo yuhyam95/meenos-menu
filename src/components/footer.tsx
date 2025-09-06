@@ -25,7 +25,7 @@ export function Footer({ storeSettings }: FooterProps) {
               <Image src="/meenos-logo.png" alt="meenos.ng logo" width={140} height={38} />
             </Link>
             <p className="text-center text-sm md:text-left">
-              The finest Nigerian cuisine, delivered right to your doorstep.
+            Experience GOOD FOOD, GOOD VIBES! at Affordable Rates from N1500
             </p>
           </div>
 

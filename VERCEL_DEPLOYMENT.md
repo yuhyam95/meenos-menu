@@ -172,3 +172,4 @@ CLOUDINARY_API_SECRET=your_api_secret_here
 - **Vercel Documentation**: [vercel.com/docs](https://vercel.com/docs)
 - **Next.js Deployment**: [nextjs.org/docs/deployment](https://nextjs.org/docs/deployment)
 - **Vercel Community**: [github.com/vercel/vercel/discussions](https://github.com/vercel/vercel/discussions)
+

@@ -92,7 +92,7 @@ export default function Home() {
               Our Menu
             </h1>
             <p className="mt-4 text-lg md:text-xl text-white/90 max-w-2xl mx-auto">
-              Explore our delicious offerings, crafted with the freshest ingredients from meenos.ng.
+            Bringing you deliciousness from the heart of Kano at Meenos
             </p>
           </header>
         </div>

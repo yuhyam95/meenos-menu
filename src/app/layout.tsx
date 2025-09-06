@@ -9,24 +9,24 @@ import { getStoreSettings } from './actions';
 import { StoreSetting } from '@/lib/types';
 
 export const metadata: Metadata = {
-  title: 'Meenos Menu - Delicious Nigerian Cuisine',
-  description: 'Experience authentic Nigerian cuisine at Meenos. Order your favorite dishes online with our easy-to-use menu system.',
+  title: 'Bringing you deliciousness from the heart of Kano at Meenos',
+  description: 'Experience GOOD FOOD, GOOD VIBES! at Affordable Rates from N1500. Order your favorite dishes online with our easy-to-use menu system.',
   keywords: 'Nigerian food, restaurant, menu, online ordering, Kano cuisine, authentic African food',
   authors: [{ name: 'Meenos Restaurant' }],
   creator: 'Meenos Restaurant',
   publisher: 'Meenos Restaurant',
   robots: 'index, follow',
   openGraph: {
-    title: 'Meenos Menu - Delicious Nigerian Cuisine',
-    description: 'Experience authentic Nigerian cuisine at Meenos. Order your favorite dishes online.',
+    title: 'Bringing you deliciousness from the heart of Kano at Meenos',
+    description: 'Experience GOOD FOOD, GOOD VIBES! at Affordable Rates from N1500. Order your favorite dishes online.',
     type: 'website',
     locale: 'en_NG',
     siteName: 'Meenos Menu',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Meenos Menu - Delicious Nigerian Cuisine',
-    description: 'Experience authentic Nigerian cuisine at Meenos. Order your favorite dishes online.',
+    title: 'Bringing you deliciousness from the heart of Kano at Meenos',
+    description: 'Experience GOOD FOOD, GOOD VIBES! at Affordable Rates from N1500. Order your favorite dishes online.',
   },
   icons: {
     icon: '/favicon.ico',

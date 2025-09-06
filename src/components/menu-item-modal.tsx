@@ -53,7 +53,7 @@ export function MenuItemModal({ item, isOpen, onClose }: MenuItemModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl font-headline">{item.name}</DialogTitle>
           <DialogDescription className="text-base">
@@ -63,13 +63,14 @@ export function MenuItemModal({ item, isOpen, onClose }: MenuItemModalProps) {
         
         <div className="space-y-6">
           {/* Image */}
-          <div className="relative aspect-video w-full overflow-hidden rounded-lg">
+          <div className="relative w-full overflow-hidden rounded-lg bg-gray-50 flex items-center justify-center">
             <Image
               src={item.imageUrl}
               alt={item.name}
-              fill
+              width={600}
+              height={400}
               sizes="(max-width: 768px) 100vw, 600px"
-              className="object-cover"
+              className="object-contain w-full h-auto max-h-80"
               data-ai-hint={item['data-ai-hint']}
             />
           </div>

@@ -9,8 +9,30 @@ import { getStoreSettings } from './actions';
 import { StoreSetting } from '@/lib/types';
 
 export const metadata: Metadata = {
-  title: 'meenos.ng',
-  description: 'The easiest way to manage your menu and receive orders.',
+  title: 'Meenos Menu - Delicious Nigerian Cuisine',
+  description: 'Experience authentic Nigerian cuisine at Meenos. Order your favorite dishes online with our easy-to-use menu system.',
+  keywords: 'Nigerian food, restaurant, menu, online ordering, Kano cuisine, authentic African food',
+  authors: [{ name: 'Meenos Restaurant' }],
+  creator: 'Meenos Restaurant',
+  publisher: 'Meenos Restaurant',
+  robots: 'index, follow',
+  openGraph: {
+    title: 'Meenos Menu - Delicious Nigerian Cuisine',
+    description: 'Experience authentic Nigerian cuisine at Meenos. Order your favorite dishes online.',
+    type: 'website',
+    locale: 'en_NG',
+    siteName: 'Meenos Menu',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Meenos Menu - Delicious Nigerian Cuisine',
+    description: 'Experience authentic Nigerian cuisine at Meenos. Order your favorite dishes online.',
+  },
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon-16x16.png',
+    apple: '/apple-touch-icon.png',
+  },
 };
 
 export default async function RootLayout({
@@ -26,6 +48,17 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet" />
+        
+        {/* Favicon */}
+        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        
+        {/* Web App Manifest */}
+        <link rel="manifest" href="/site.webmanifest" />
       </head>
       <body
         className={cn(

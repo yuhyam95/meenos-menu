@@ -79,7 +79,7 @@ export default function Home() {
     <>
       <div className="relative h-64 md:h-96 w-full">
         <Image 
-          src="https://picsum.photos/1600/900" 
+          src="/header.jpeg" 
           alt="Nigerian food platter"
           fill
           className="object-cover"

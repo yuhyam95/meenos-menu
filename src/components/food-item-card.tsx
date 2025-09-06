@@ -1,6 +1,7 @@
 
 "use client";
 
+import { useState } from 'react';
 import Image from 'next/image';
 import type { FoodItem } from '@/lib/types';
 import { Button } from '@/components/ui/button';
@@ -13,7 +14,8 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { useCart } from '@/hooks/use-cart';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, Info } from 'lucide-react';
+import { MenuItemModal } from './menu-item-modal';
 
 interface FoodItemCardProps {
   item: FoodItem;
@@ -21,9 +23,23 @@ interface FoodItemCardProps {
 
 export function FoodItemCard({ item }: FoodItemCardProps) {
   const { addToCart } = useCart();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleCardClick = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleAddToCartClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent modal from opening
+    addToCart(item);
+  };
 
   return (
-    <Card className="flex flex-col overflow-hidden h-full transition-all hover:shadow-lg sm:hover:-translate-y-1">
+    <>
+      <Card 
+        className="group flex flex-col overflow-hidden h-full transition-all hover:shadow-lg sm:hover:-translate-y-1 cursor-pointer hover:ring-2 hover:ring-primary/20"
+        onClick={handleCardClick}
+      >
       {/* Desktop View - Default */}
       <div className="hidden sm:block h-full flex flex-col">
           <CardHeader className="p-0">
@@ -38,7 +54,10 @@ export function FoodItemCard({ item }: FoodItemCardProps) {
               />
             </div>
             <div className="p-6 pb-2">
-                <CardTitle className="font-headline text-xl leading-tight">{item.name}</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="font-headline text-xl leading-tight">{item.name}</CardTitle>
+                  <Info className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
             </div>
           </CardHeader>
           <CardContent className="flex-grow p-6 pt-0">
@@ -48,7 +67,7 @@ export function FoodItemCard({ item }: FoodItemCardProps) {
             <p className="text-xl font-bold text-primary">
               {item.price.toLocaleString('en-NG', { style: 'currency', currency: 'NGN' })}
             </p>
-            <Button onClick={() => addToCart(item)} className="w-full sm:w-auto">
+            <Button onClick={handleAddToCartClick} className="w-full sm:w-auto">
               <ShoppingCart className="mr-2 h-4 w-4" />
               Add to Cart
             </Button>
@@ -76,7 +95,7 @@ export function FoodItemCard({ item }: FoodItemCardProps) {
                 <p className="text-base font-bold text-primary">
                     {item.price.toLocaleString('en-NG', { style: 'currency', currency: 'NGN' })}
                 </p>
-                <Button onClick={() => addToCart(item)} size="sm" className="shrink-0 h-8 px-2 py-1 text-xs">
+                <Button onClick={handleAddToCartClick} size="sm" className="shrink-0 h-8 px-2 py-1 text-xs">
                     <ShoppingCart className="mr-1 h-3 w-3" />
                     Add
                 </Button>
@@ -84,5 +103,12 @@ export function FoodItemCard({ item }: FoodItemCardProps) {
         </div>
       </div>
     </Card>
+    
+    <MenuItemModal 
+      item={item}
+      isOpen={isModalOpen}
+      onClose={() => setIsModalOpen(false)}
+    />
+    </>
   );
 }

@@ -79,7 +79,7 @@ export default function Home() {
     <>
       <div className="relative h-64 md:h-96 w-full">
         <Image 
-          src="/header.jpeg" 
+          src="/header-3.jpeg" 
           alt="Nigerian food platter"
           fill
           className="cover"

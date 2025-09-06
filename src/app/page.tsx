@@ -82,7 +82,7 @@ export default function Home() {
           src="/header.jpeg" 
           alt="Nigerian food platter"
           fill
-          className="object-cover"
+          className="cover"
           data-ai-hint="food platter"
           priority
         />

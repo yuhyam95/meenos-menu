@@ -2,7 +2,7 @@
 'use client';
 
 import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarTrigger } from "@/components/ui/sidebar";
-import { UtensilsCrossed, ShoppingCart, Truck, Tags, Settings, Users, LogOut, PanelLeft } from 'lucide-react';
+import { UtensilsCrossed, ShoppingCart, Truck, Tags, Settings, Users, LogOut, PanelLeft, Bell } from 'lucide-react';
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -23,6 +23,7 @@ export default function AdminLayout({
     { href: '/admin/categories', label: 'Category Management', icon: Tags },
     { href: '/admin/delivery', label: 'Delivery Management', icon: Truck },
     { href: '/admin/users', label: 'User Management', icon: Users },
+    { href: '/admin/notifications', label: 'Notifications', icon: Bell },
     { href: '/admin/store-setup', label: 'Store Setup', icon: Settings },
   ];
 

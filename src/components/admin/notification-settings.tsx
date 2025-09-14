@@ -1,0 +1,123 @@
+'use client';
+
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { useToast } from '@/hooks/use-toast';
+import { TestTube } from 'lucide-react';
+
+export function NotificationSettings() {
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+
+  const handleTestNotifications = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/test-notifications', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast({
+          title: 'Test Notifications Sent!',
+          description: `Email: ${data.results.email}, WhatsApp: ${data.results.whatsapp}`,
+        });
+      } else {
+        toast({
+          title: 'Test Failed',
+          description: data.error || 'Failed to send test notifications',
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to send test notifications',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <TestTube className="h-5 w-5" />
+            Notification Testing
+          </CardTitle>
+          <CardDescription>
+            Test your email and WhatsApp notification setup
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium">Send Test Notifications</p>
+              <p className="text-sm text-muted-foreground">
+                This will send test notifications to your configured email and WhatsApp
+              </p>
+            </div>
+            <Button 
+              onClick={handleTestNotifications} 
+              disabled={isLoading}
+              variant="outline"
+            >
+              {isLoading ? 'Sending...' : 'Send Test'}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Configuration Guide</CardTitle>
+          <CardDescription>
+            Set up your notification services using environment variables
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Required Environment Variables</Label>
+            <div className="bg-muted p-4 rounded-lg space-y-2 text-sm">
+              <div>
+                <strong>Email (Resend):</strong>
+                <ul className="ml-4 mt-1 space-y-1">
+                  <li>• RESEND_API_KEY</li>
+                  <li>• ADMIN_EMAIL</li>
+                  <li>• ENABLE_EMAIL_NOTIFICATIONS=true</li>
+                </ul>
+              </div>
+              <div>
+                <strong>WhatsApp (Twilio):</strong>
+                <ul className="ml-4 mt-1 space-y-1">
+                  <li>• TWILIO_ACCOUNT_SID</li>
+                  <li>• TWILIO_AUTH_TOKEN</li>
+                  <li>• TWILIO_WHATSAPP_NUMBER</li>
+                  <li>• ADMIN_PHONE</li>
+                  <li>• ENABLE_WHATSAPP_NOTIFICATIONS=true</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          
+          <div className="text-sm text-muted-foreground">
+            <p>
+              See <code className="bg-muted px-1 py-0.5 rounded">NOTIFICATION_SETUP.md</code> for detailed setup instructions.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

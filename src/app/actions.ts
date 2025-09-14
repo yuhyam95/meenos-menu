@@ -168,7 +168,40 @@ export async function getOrders(): Promise<Order[]> {
 export async function addOrder(orderData: Omit<Order, 'id' | '_id' | 'createdAt'>): Promise<void> {
   const collection = await getOrdersCollection();
   const now = new Date();
-  await collection.insertOne({ ...orderData, createdAt: now });
+  const orderWithId = { ...orderData, createdAt: now };
+  await collection.insertOne(orderWithId);
+  
+  // Generate order ID for notifications
+  const orderId = orderWithId._id?.toString() || 'ORD-' + Date.now();
+  const order: Order = { ...orderWithId, id: orderId };
+  
+  // Send notifications asynchronously (don't block the order creation)
+  setImmediate(async () => {
+    try {
+      const { sendOrderNotifications, getNotificationConfig } = await import('@/lib/notifications');
+      const config = getNotificationConfig();
+      
+      // Add customer phone to config if available
+      const notificationConfig = {
+        ...config,
+        customerPhone: orderData.customer.phone
+      };
+      
+      const results = await sendOrderNotifications(order, notificationConfig);
+      
+      // Log notification results
+      console.log('Order notification results:', {
+        orderId: order.id,
+        email: results.email.success ? 'sent' : `failed: ${results.email.error}`,
+        whatsapp: results.whatsapp.success ? 'sent' : `failed: ${results.whatsapp.error}`,
+        customerEmail: results.customerEmail.success ? 'sent' : `failed: ${results.customerEmail.error}`,
+        customerWhatsApp: results.customerWhatsApp.success ? 'sent' : `failed: ${results.customerWhatsApp.error}`
+      });
+    } catch (error) {
+      console.error('Error sending order notifications:', error);
+    }
+  });
+  
   revalidatePath('/admin/orders');
 }
 

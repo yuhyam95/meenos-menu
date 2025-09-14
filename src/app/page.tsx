@@ -39,7 +39,7 @@ function MenuItemsDisplay() {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6">
         {[...Array(8)].map((_, i) => <Skeleton key={i} className="h-96 w-full" />)}
       </div>
     )
@@ -48,16 +48,20 @@ function MenuItemsDisplay() {
   return (
     <>
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex flex-col items-center mb-8">
-        <TabsList className="grid w-full max-w-md h-auto" style={{ gridTemplateColumns: `repeat(${Math.min(categories.length, 4)}, 1fr)`}}>
+        <TabsList className="grid w-full max-w-2xl h-auto grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-1 p-1">
           {categories.map((category) => (
-            <TabsTrigger key={category} value={category} className="text-base">
+            <TabsTrigger 
+              key={category} 
+              value={category} 
+              className="text-sm sm:text-base"
+            >
               {category}
             </TabsTrigger>
           ))}
         </TabsList>
       </Tabs>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6">
         {filteredItems.map((item) => (
           <FoodItemCard key={item.id} item={item} />
         ))}
@@ -97,8 +101,8 @@ export default function Home() {
           </header>
         </div>
       </div>
-      <div className="container mx-auto px-4 py-8 md:py-12">
-        <Suspense fallback={<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="container mx-auto px-4 py-8 md:py-12 max-w-7xl">
+        <Suspense fallback={<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6">
           {[...Array(8)].map((_, i) => <Skeleton key={i} className="h-96 w-full" />)}
         </div>}>
           <MenuItemsDisplay />

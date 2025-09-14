@@ -18,7 +18,7 @@ import { useEffect } from 'react';
 
 const formSchema = z.object({
   name: z.string().min(2, 'Location name must be at least 2 characters.'),
-  price: z.coerce.number().positive('Price must be a positive number.'),
+  price: z.coerce.number(),
 });
 
 interface DeliveryPriceFormProps {

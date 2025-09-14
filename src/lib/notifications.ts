@@ -1,5 +1,5 @@
 import { sendOrderNotificationEmail, sendCustomerConfirmationEmail } from './email';
-import { sendWhatsAppNotification, sendCustomerWhatsAppConfirmation, sendWhatsAppViaTwilio } from './whatsapp';
+import { sendWhatsAppNotification, sendCustomerWhatsAppConfirmation, sendWhatsAppViaTwilio, sendWhatsAppViaWebAPI } from './whatsapp';
 import type { Order } from './types';
 
 interface NotificationConfig {
@@ -39,9 +39,11 @@ export async function sendOrderNotifications(order: Order, config: NotificationC
   // Send admin WhatsApp notification
   if (config.enableWhatsApp) {
     try {
-      // Try Twilio first, fallback to webhook
+      // Try free options first, then paid services
       let whatsappResult;
-      if (process.env.TWILIO_ACCOUNT_SID) {
+      if (process.env.WHATSAPP_FREE_WEBHOOK_URL) {
+        whatsappResult = await sendWhatsAppViaWebAPI(order, config.adminPhone);
+      } else if (process.env.TWILIO_ACCOUNT_SID) {
         whatsappResult = await sendWhatsAppViaTwilio(order, config.adminPhone);
       } else {
         whatsappResult = await sendWhatsAppNotification(order, config.adminPhone);
@@ -79,7 +81,9 @@ export async function sendOrderNotifications(order: Order, config: NotificationC
   if (config.enableCustomerNotifications && config.customerPhone) {
     try {
       let customerWhatsappResult;
-      if (process.env.TWILIO_ACCOUNT_SID) {
+      if (process.env.WHATSAPP_FREE_WEBHOOK_URL) {
+        customerWhatsappResult = await sendWhatsAppViaWebAPI(order, config.customerPhone);
+      } else if (process.env.TWILIO_ACCOUNT_SID) {
         customerWhatsappResult = await sendWhatsAppViaTwilio(order, config.customerPhone);
       } else {
         customerWhatsappResult = await sendCustomerWhatsAppConfirmation(order, config.customerPhone);

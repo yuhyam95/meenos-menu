@@ -87,26 +87,47 @@ export function NotificationSettings() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">Required Environment Variables</Label>
-            <div className="bg-muted p-4 rounded-lg space-y-2 text-sm">
-              <div>
-                <strong>Email (Resend):</strong>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">FREE WhatsApp Setup (Recommended)</Label>
+              <div className="bg-green-50 border border-green-200 p-4 rounded-lg space-y-2 text-sm">
+                <div className="flex items-center gap-2">
+                  <span className="text-green-600 font-semibold">✓ CallMeBot (100% Free)</span>
+                </div>
+                <ul className="ml-4 mt-1 space-y-1 text-green-700">
+                  <li>• WHATSAPP_FREE_WEBHOOK_URL</li>
+                  <li>• ADMIN_PHONE</li>
+                  <li>• ENABLE_WHATSAPP_NOTIFICATIONS=true</li>
+                </ul>
+                <p className="text-xs text-green-600 mt-2">
+                  See <code className="bg-green-100 px-1 py-0.5 rounded">WHATSAPP_FREE_SETUP.md</code> for step-by-step setup
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Email Setup (Resend)</Label>
+              <div className="bg-muted p-4 rounded-lg space-y-2 text-sm">
                 <ul className="ml-4 mt-1 space-y-1">
                   <li>• RESEND_API_KEY</li>
                   <li>• ADMIN_EMAIL</li>
                   <li>• ENABLE_EMAIL_NOTIFICATIONS=true</li>
                 </ul>
               </div>
-              <div>
-                <strong>WhatsApp (Twilio):</strong>
-                <ul className="ml-4 mt-1 space-y-1">
-                  <li>• TWILIO_ACCOUNT_SID</li>
-                  <li>• TWILIO_AUTH_TOKEN</li>
-                  <li>• TWILIO_WHATSAPP_NUMBER</li>
-                  <li>• ADMIN_PHONE</li>
-                  <li>• ENABLE_WHATSAPP_NOTIFICATIONS=true</li>
-                </ul>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Paid WhatsApp Options (Optional)</Label>
+              <div className="bg-muted p-4 rounded-lg space-y-2 text-sm">
+                <div>
+                  <strong>Twilio WhatsApp:</strong>
+                  <ul className="ml-4 mt-1 space-y-1">
+                    <li>• TWILIO_ACCOUNT_SID</li>
+                    <li>• TWILIO_AUTH_TOKEN</li>
+                    <li>• TWILIO_WHATSAPP_NUMBER</li>
+                    <li>• ADMIN_PHONE</li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>

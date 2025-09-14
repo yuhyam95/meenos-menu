@@ -116,7 +116,63 @@ We'll contact you soon to confirm your order. Thank you for choosing Meenos! �
   }
 }
 
-// Alternative: Using a service like Twilio WhatsApp API
+// Free Alternative: Using WhatsApp Web API (unofficial but free)
+export async function sendWhatsAppViaWebAPI(order: Order, adminPhone: string) {
+  try {
+    const orderItems = order.items.map(item => 
+      `• ${item.name} x${item.quantity} - ₦${(item.price * item.quantity).toLocaleString()}`
+    ).join('\n');
+
+    const message = `🍽️ *NEW ORDER RECEIVED!*
+
+*Order ID:* ${order.id}
+*Customer:* ${order.customer.name}
+*Phone:* ${order.customer.phone}
+*Order Type:* ${order.orderType}
+*Status:* ${order.status}
+*Total:* ₦${order.total.toLocaleString()}
+*Time:* ${order.createdAt.toLocaleString()}
+
+*Items:*
+${orderItems}
+
+${order.customer.address ? `*Delivery Address:* ${order.customer.address}` : ''}
+${order.notes ? `*Notes:* ${order.notes}` : ''}
+
+Please check your admin panel to process this order.`;
+
+    // Using a free WhatsApp webhook service like CallMeBot or similar
+    const webhookUrl = process.env.WHATSAPP_FREE_WEBHOOK_URL;
+    
+    if (!webhookUrl) {
+      console.warn('Free WhatsApp webhook URL not configured. Skipping WhatsApp notification.');
+      return { success: false, error: 'Free WhatsApp webhook URL not configured' };
+    }
+
+    const response = await axios.post(webhookUrl, {
+      phone: adminPhone.replace('+', ''), // Remove + for some services
+      text: message
+    }, {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      timeout: 10000
+    });
+
+    if (response.status === 200) {
+      console.log('WhatsApp notification sent via free webhook successfully');
+      return { success: true, data: response.data };
+    } else {
+      console.error('WhatsApp notification via free webhook failed:', response.status, response.data);
+      return { success: false, error: `HTTP ${response.status}` };
+    }
+  } catch (error) {
+    console.error('Error sending WhatsApp notification via free webhook:', error);
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+  }
+}
+
+// Alternative: Using a service like Twilio WhatsApp API (PAID)
 export async function sendWhatsAppViaTwilio(order: Order, adminPhone: string) {
   try {
     const orderItems = order.items.map(item => 

@@ -27,36 +27,87 @@ ${order.notes ? `Notes: ${order.notes}` : ''}
     `.trim();
 
     const { data, error } = await resend.emails.send({
-      from: 'Meenos Restaurant <noreply@meenos.com>',
+      from: 'Meenos Restaurant <noreply@meenos.ng>',
       to: [adminEmail],
       subject: `New Order Received - ${order.id}`,
       html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #d32f2f;">🍽️ New Order Received!</h2>
-          <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <h3>Order Details</h3>
-            <p><strong>Order ID:</strong> ${order.id}</p>
-            <p><strong>Customer:</strong> ${order.customer.name}</p>
-            <p><strong>Phone:</strong> ${order.customer.phone}</p>
-            <p><strong>Order Type:</strong> ${order.orderType}</p>
-            <p><strong>Status:</strong> ${order.status}</p>
-            <p><strong>Total:</strong> ₦${order.total.toLocaleString()}</p>
-            <p><strong>Created:</strong> ${order.createdAt.toLocaleString()}</p>
-            ${order.customer.address ? `<p><strong>Delivery Address:</strong> ${order.customer.address}</p>` : ''}
-            ${order.notes ? `<p><strong>Notes:</strong> ${order.notes}</p>` : ''}
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
+          <!-- Header with Logo -->
+          <div style="background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%); padding: 30px 20px; text-align: center; border-radius: 12px 12px 0 0;">
+            <img src="https://meenos.ng/meenos-logo.png" alt="Meenos Restaurant" style="height: 60px; margin-bottom: 15px;" />
+            <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">🍽️ New Order Received!</h1>
+            <p style="color: #ffebee; margin: 8px 0 0 0; font-size: 16px; opacity: 0.9;">Order #${order.id}</p>
           </div>
           
-          <div style="background: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-            <h3>Items Ordered</h3>
-            <ul>
-              ${order.items.map(item => 
-                `<li>${item.name} x${item.quantity} - ₦${(item.price * item.quantity).toLocaleString()}</li>`
-              ).join('')}
-            </ul>
+          <!-- Order Details Card -->
+          <div style="background: #f8f9fa; padding: 25px; margin: 0; border-left: 4px solid #d32f2f;">
+            <h2 style="color: #2c3e50; margin: 0 0 20px 0; font-size: 22px; font-weight: 600;">📋 Order Information</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+              <div style="background: #ffffff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <p style="margin: 0 0 8px 0; color: #6c757d; font-size: 14px; font-weight: 500;">CUSTOMER</p>
+                <p style="margin: 0; color: #2c3e50; font-size: 16px; font-weight: 600;">${order.customer.name}</p>
+              </div>
+              <div style="background: #ffffff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <p style="margin: 0 0 8px 0; color: #6c757d; font-size: 14px; font-weight: 500;">PHONE</p>
+                <p style="margin: 0; color: #2c3e50; font-size: 16px; font-weight: 600;">${order.customer.phone}</p>
+              </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+              <div style="background: #ffffff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <p style="margin: 0 0 8px 0; color: #6c757d; font-size: 14px; font-weight: 500;">ORDER TYPE</p>
+                <p style="margin: 0; color: #2c3e50; font-size: 16px; font-weight: 600; text-transform: capitalize;">${order.orderType}</p>
+              </div>
+              <div style="background: #ffffff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <p style="margin: 0 0 8px 0; color: #6c757d; font-size: 14px; font-weight: 500;">STATUS</p>
+                <p style="margin: 0; color: #d32f2f; font-size: 16px; font-weight: 600; text-transform: uppercase;">${order.status}</p>
+              </div>
+            </div>
+            <div style="background: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center;">
+              <p style="margin: 0 0 8px 0; color: #6c757d; font-size: 14px; font-weight: 500;">TOTAL AMOUNT</p>
+              <p style="margin: 0; color: #d32f2f; font-size: 28px; font-weight: 700;">₦${order.total.toLocaleString()}</p>
+            </div>
+            ${order.customer.address ? `
+              <div style="background: #ffffff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-top: 15px;">
+                <p style="margin: 0 0 8px 0; color: #6c757d; font-size: 14px; font-weight: 500;">📍 DELIVERY ADDRESS</p>
+                <p style="margin: 0; color: #2c3e50; font-size: 16px; line-height: 1.4;">${order.customer.address}</p>
+              </div>
+            ` : ''}
+            ${order.notes ? `
+              <div style="background: #ffffff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-top: 15px;">
+                <p style="margin: 0 0 8px 0; color: #6c757d; font-size: 14px; font-weight: 500;">📝 NOTES</p>
+                <p style="margin: 0; color: #2c3e50; font-size: 16px; line-height: 1.4;">${order.notes}</p>
+              </div>
+            ` : ''}
           </div>
           
-          <div style="margin-top: 20px; padding: 15px; background: #e8f5e8; border-radius: 8px;">
-            <p style="margin: 0; color: #2e7d32;"><strong>Action Required:</strong> Please check your admin panel to process this order.</p>
+          <!-- Items Ordered -->
+          <div style="background: #ffffff; padding: 25px; margin: 0; border: 1px solid #e9ecef;">
+            <h2 style="color: #2c3e50; margin: 0 0 20px 0; font-size: 22px; font-weight: 600;">🍽️ Items Ordered</h2>
+            <div style="space-y: 12px;">
+              ${order.items.map(item => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #f8f9fa; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid #d32f2f;">
+                  <div>
+                    <p style="margin: 0 0 4px 0; color: #2c3e50; font-size: 16px; font-weight: 600;">${item.name}</p>
+                    <p style="margin: 0; color: #6c757d; font-size: 14px;">Quantity: ${item.quantity}</p>
+                  </div>
+                  <div style="text-align: right;">
+                    <p style="margin: 0; color: #d32f2f; font-size: 18px; font-weight: 700;">₦${(item.price * item.quantity).toLocaleString()}</p>
+                    <p style="margin: 0; color: #6c757d; font-size: 12px;">₦${item.price.toLocaleString()} each</p>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          
+          <!-- Action Required -->
+          <div style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); padding: 20px; text-align: center; border-radius: 0 0 12px 12px;">
+            <p style="margin: 0; color: #ffffff; font-size: 16px; font-weight: 600;">⚡ Action Required: Please check your admin panel to process this order</p>
+          </div>
+          
+          <!-- Footer -->
+          <div style="text-align: center; padding: 20px; color: #6c757d; font-size: 14px;">
+            <p style="margin: 0;">Order created: ${order.createdAt.toLocaleString()}</p>
+            <p style="margin: 8px 0 0 0;">Thank you for using Meenos Restaurant! 🍽️</p>
           </div>
         </div>
       `,
@@ -85,36 +136,85 @@ export async function sendCustomerConfirmationEmail(order: Order, customerEmail?
     ).join('\n');
 
     const { data, error } = await resend.emails.send({
-      from: 'Meenos Restaurant <noreply@meenos.com>',
+      from: 'Meenos Restaurant <noreply@meenos.ng>',
       to: [customerEmail],
       subject: `Order Confirmation - ${order.id}`,
       html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #d32f2f;">🍽️ Thank you for your order!</h2>
-          <p>Dear ${order.customer.name},</p>
-          <p>We've received your order and will process it shortly. Here are the details:</p>
-          
-          <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <h3>Order Details</h3>
-            <p><strong>Order ID:</strong> ${order.id}</p>
-            <p><strong>Order Type:</strong> ${order.orderType}</p>
-            <p><strong>Total:</strong> ₦${order.total.toLocaleString()}</p>
-            <p><strong>Status:</strong> ${order.status}</p>
-            ${order.customer.address ? `<p><strong>Delivery Address:</strong> ${order.customer.address}</p>` : ''}
-            ${order.notes ? `<p><strong>Notes:</strong> ${order.notes}</p>` : ''}
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
+          <!-- Header with Logo -->
+          <div style="background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%); padding: 30px 20px; text-align: center; border-radius: 12px 12px 0 0;">
+            <img src="https://meenos.ng/meenos-logo.png" alt="Meenos Restaurant" style="height: 60px; margin-bottom: 15px;" />
+            <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">🍽️ Thank You for Your Order!</h1>
+            <p style="color: #ffebee; margin: 8px 0 0 0; font-size: 16px; opacity: 0.9;">Order #${order.id}</p>
           </div>
           
-          <div style="background: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-            <h3>Items Ordered</h3>
-            <ul>
-              ${order.items.map(item => 
-                `<li>${item.name} x${item.quantity} - ₦${(item.price * item.quantity).toLocaleString()}</li>`
-              ).join('')}
-            </ul>
+          <!-- Welcome Message -->
+          <div style="background: #f8f9fa; padding: 25px; margin: 0; border-left: 4px solid #28a745;">
+            <h2 style="color: #2c3e50; margin: 0 0 15px 0; font-size: 22px; font-weight: 600;">👋 Hello ${order.customer.name}!</h2>
+            <p style="color: #495057; margin: 0; font-size: 16px; line-height: 1.6;">We've received your order and our team is already preparing your delicious meal. Here are your order details:</p>
           </div>
           
-          <div style="margin-top: 20px; padding: 15px; background: #e3f2fd; border-radius: 8px;">
-            <p style="margin: 0; color: #1976d2;">We'll contact you soon to confirm your order. Thank you for choosing Meenos!</p>
+          <!-- Order Summary -->
+          <div style="background: #ffffff; padding: 25px; margin: 0; border: 1px solid #e9ecef;">
+            <h2 style="color: #2c3e50; margin: 0 0 20px 0; font-size: 22px; font-weight: 600;">📋 Order Summary</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+              <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #d32f2f;">
+                <p style="margin: 0 0 8px 0; color: #6c757d; font-size: 14px; font-weight: 500;">ORDER TYPE</p>
+                <p style="margin: 0; color: #2c3e50; font-size: 16px; font-weight: 600; text-transform: capitalize;">${order.orderType}</p>
+              </div>
+              <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #28a745;">
+                <p style="margin: 0 0 8px 0; color: #6c757d; font-size: 14px; font-weight: 500;">STATUS</p>
+                <p style="margin: 0; color: #28a745; font-size: 16px; font-weight: 600; text-transform: uppercase;">${order.status}</p>
+              </div>
+            </div>
+            <div style="background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%); padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 20px;">
+              <p style="margin: 0 0 8px 0; color: #ffffff; font-size: 14px; font-weight: 500; opacity: 0.9;">TOTAL AMOUNT</p>
+              <p style="margin: 0; color: #ffffff; font-size: 32px; font-weight: 700;">₦${order.total.toLocaleString()}</p>
+            </div>
+            ${order.customer.address ? `
+              <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #17a2b8;">
+                <p style="margin: 0 0 8px 0; color: #6c757d; font-size: 14px; font-weight: 500;">📍 DELIVERY ADDRESS</p>
+                <p style="margin: 0; color: #2c3e50; font-size: 16px; line-height: 1.4;">${order.customer.address}</p>
+              </div>
+            ` : ''}
+            ${order.notes ? `
+              <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #ffc107; margin-top: 15px;">
+                <p style="margin: 0 0 8px 0; color: #6c757d; font-size: 14px; font-weight: 500;">📝 SPECIAL NOTES</p>
+                <p style="margin: 0; color: #2c3e50; font-size: 16px; line-height: 1.4;">${order.notes}</p>
+              </div>
+            ` : ''}
+          </div>
+          
+          <!-- Items Ordered -->
+          <div style="background: #ffffff; padding: 25px; margin: 0; border: 1px solid #e9ecef;">
+            <h2 style="color: #2c3e50; margin: 0 0 20px 0; font-size: 22px; font-weight: 600;">🍽️ Your Delicious Order</h2>
+            <div style="space-y: 12px;">
+              ${order.items.map(item => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #f8f9fa; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid #d32f2f;">
+                  <div>
+                    <p style="margin: 0 0 4px 0; color: #2c3e50; font-size: 16px; font-weight: 600;">${item.name}</p>
+                    <p style="margin: 0; color: #6c757d; font-size: 14px;">Quantity: ${item.quantity}</p>
+                  </div>
+                  <div style="text-align: right;">
+                    <p style="margin: 0; color: #d32f2f; font-size: 18px; font-weight: 700;">₦${(item.price * item.quantity).toLocaleString()}</p>
+                    <p style="margin: 0; color: #6c757d; font-size: 12px;">₦${item.price.toLocaleString()} each</p>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          
+          <!-- Next Steps -->
+          <div style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); padding: 25px; text-align: center; margin: 0;">
+            <h2 style="color: #ffffff; margin: 0 0 15px 0; font-size: 22px; font-weight: 600;">⏰ What's Next?</h2>
+            <p style="margin: 0 0 15px 0; color: #ffffff; font-size: 16px; line-height: 1.6;">We'll contact you soon to confirm your order and provide an estimated delivery time.</p>
+            <p style="margin: 0; color: #ffffff; font-size: 16px; font-weight: 600;">Thank you for choosing Meenos Restaurant! 🍽️</p>
+          </div>
+          
+          <!-- Footer -->
+          <div style="text-align: center; padding: 20px; color: #6c757d; font-size: 14px; border-radius: 0 0 12px 12px; background: #f8f9fa;">
+            <p style="margin: 0;">Order created: ${order.createdAt.toLocaleString()}</p>
+            <p style="margin: 8px 0 0 0;">Questions? Contact us at your convenience! 📞</p>
           </div>
         </div>
       `,

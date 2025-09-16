@@ -33,11 +33,10 @@ ${order.notes ? `Notes: ${order.notes}` : ''}
       html: `
         <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
           <!-- Header with Logo -->
-          <div style="background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%); padding: 30px 20px; text-align: center; border-radius: 12px 12px 0 0;">
+          <div style="background: linear-gradient(135deg,rgb(225, 167, 167) 0%,rgb(214, 124, 124) 100%); padding: 30px 20px; text-align: center; border-radius: 12px 12px 0 0;">
             <img src="https://meenos.ng/meenos-logo.png" alt="Meenos Restaurant" style="height: 60px; margin-bottom: 15px;" />
             <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">🍽️ New Order Received!</h1>
-            <p style="color: #ffebee; margin: 8px 0 0 0; font-size: 16px; opacity: 0.9;">Order #${order.id}</p>
-          </div>
+            </div>
           
           <!-- Order Details Card -->
           <div style="background: #f8f9fa; padding: 25px; margin: 0; border-left: 4px solid #d32f2f;">
@@ -86,11 +85,11 @@ ${order.notes ? `Notes: ${order.notes}` : ''}
             <div style="space-y: 12px;">
               ${order.items.map(item => `
                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #f8f9fa; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid #d32f2f;">
-                  <div>
-                    <p style="margin: 0 0 4px 0; color: #2c3e50; font-size: 16px; font-weight: 600;">${item.name}</p>
+                  <div style="flex: 1;">
+                    <p style="margin: 0 0 4px 0; color: #2c3e50; font-size: 14px; font-weight: 600;">${item.name}</p>
                     <p style="margin: 0; color: #6c757d; font-size: 14px;">Quantity: ${item.quantity}</p>
                   </div>
-                  <div style="text-align: right;">
+                  <div style="text-align: right; flex-shrink: 0; margin-left: 15px;">
                     <p style="margin: 0; color: #d32f2f; font-size: 18px; font-weight: 700;">₦${(item.price * item.quantity).toLocaleString()}</p>
                     <p style="margin: 0; color: #6c757d; font-size: 12px;">₦${item.price.toLocaleString()} each</p>
                   </div>
@@ -191,11 +190,11 @@ export async function sendCustomerConfirmationEmail(order: Order, customerEmail?
             <div style="space-y: 12px;">
               ${order.items.map(item => `
                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #f8f9fa; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid #d32f2f;">
-                  <div>
-                    <p style="margin: 0 0 4px 0; color: #2c3e50; font-size: 16px; font-weight: 600;">${item.name}</p>
+                  <div style="flex: 1;">
+                    <p style="margin: 0 0 4px 0; color: #2c3e50; font-size: 14px; font-weight: 600;">${item.name}</p>
                     <p style="margin: 0; color: #6c757d; font-size: 14px;">Quantity: ${item.quantity}</p>
                   </div>
-                  <div style="text-align: right;">
+                  <div style="text-align: right; flex-shrink: 0; margin-left: 15px;">
                     <p style="margin: 0; color: #d32f2f; font-size: 18px; font-weight: 700;">₦${(item.price * item.quantity).toLocaleString()}</p>
                     <p style="margin: 0; color: #6c757d; font-size: 12px;">₦${item.price.toLocaleString()} each</p>
                   </div>

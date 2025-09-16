@@ -27,7 +27,7 @@ ${order.notes ? `Notes: ${order.notes}` : ''}
     `.trim();
 
     const { data, error } = await resend.emails.send({
-      from: 'Meenos Restaurant <noreply@meenos.com>',
+      from: 'Meenos Restaurant <onboarding@resend.dev>',
       to: [adminEmail],
       subject: `New Order Received - ${order.id}`,
       html: `
@@ -85,7 +85,7 @@ export async function sendCustomerConfirmationEmail(order: Order, customerEmail?
     ).join('\n');
 
     const { data, error } = await resend.emails.send({
-      from: 'Meenos Restaurant <noreply@meenos.com>',
+      from: 'Meenos Restaurant <onboarding@resend.dev>',
       to: [customerEmail],
       subject: `Order Confirmation - ${order.id}`,
       html: `

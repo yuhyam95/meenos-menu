@@ -89,30 +89,36 @@ export function NotificationSettings() {
         <CardContent className="space-y-4">
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label className="text-sm font-medium">FREE WhatsApp Setup (Recommended)</Label>
-              <div className="bg-green-50 border border-green-200 p-4 rounded-lg space-y-2 text-sm">
+              <Label className="text-sm font-medium">Email Setup (Resend) - REQUIRED</Label>
+              <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg space-y-2 text-sm">
                 <div className="flex items-center gap-2">
-                  <span className="text-green-600 font-semibold">✓ CallMeBot (100% Free)</span>
+                  <span className="text-blue-600 font-semibold">✓ Email Notifications (Recommended)</span>
                 </div>
-                <ul className="ml-4 mt-1 space-y-1 text-green-700">
-                  <li>• WHATSAPP_FREE_WEBHOOK_URL</li>
-                  <li>• ADMIN_PHONE</li>
-                  <li>• ENABLE_WHATSAPP_NOTIFICATIONS=true</li>
+                <ul className="ml-4 mt-1 space-y-1 text-blue-700">
+                  <li>• RESEND_API_KEY</li>
+                  <li>• ADMIN_EMAIL</li>
+                  <li>• ENABLE_EMAIL_NOTIFICATIONS=true</li>
                 </ul>
-                <p className="text-xs text-green-600 mt-2">
-                  See <code className="bg-green-100 px-1 py-0.5 rounded">WHATSAPP_FREE_SETUP.md</code> for step-by-step setup
+                <p className="text-xs text-blue-600 mt-2">
+                  Uses <code className="bg-blue-100 px-1 py-0.5 rounded">onboarding@resend.dev</code> (verified domain)
                 </p>
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Email Setup (Resend)</Label>
-              <div className="bg-muted p-4 rounded-lg space-y-2 text-sm">
-                <ul className="ml-4 mt-1 space-y-1">
-                  <li>• RESEND_API_KEY</li>
-                  <li>• ADMIN_EMAIL</li>
-                  <li>• ENABLE_EMAIL_NOTIFICATIONS=true</li>
+              <Label className="text-sm font-medium">WhatsApp Setup (Optional)</Label>
+              <div className="bg-gray-50 border border-gray-200 p-4 rounded-lg space-y-2 text-sm">
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-600 font-semibold">📱 WhatsApp (Optional)</span>
+                </div>
+                <ul className="ml-4 mt-1 space-y-1 text-gray-600">
+                  <li>• WHATSAPP_FREE_WEBHOOK_URL (CallMeBot)</li>
+                  <li>• ADMIN_PHONE</li>
+                  <li>• ENABLE_WHATSAPP_NOTIFICATIONS=true</li>
                 </ul>
+                <p className="text-xs text-gray-500 mt-2">
+                  See <code className="bg-gray-100 px-1 py-0.5 rounded">WHATSAPP_FREE_SETUP.md</code> for setup
+                </p>
               </div>
             </div>
 

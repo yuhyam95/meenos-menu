@@ -108,8 +108,8 @@ export function getNotificationConfig(): NotificationConfig {
   return {
     adminEmail: process.env.ADMIN_EMAIL || 'admin@meenos.com',
     adminPhone: process.env.ADMIN_PHONE || '+2348000000000',
-    enableEmail: process.env.ENABLE_EMAIL_NOTIFICATIONS === 'true',
-    enableWhatsApp: process.env.ENABLE_WHATSAPP_NOTIFICATIONS === 'true',
+    enableEmail: process.env.ENABLE_EMAIL_NOTIFICATIONS !== 'false', // Default to true
+    enableWhatsApp: process.env.ENABLE_WHATSAPP_NOTIFICATIONS === 'true', // Default to false
     enableCustomerNotifications: process.env.ENABLE_CUSTOMER_NOTIFICATIONS === 'true',
     customerEmail: process.env.CUSTOMER_EMAIL,
     customerPhone: process.env.CUSTOMER_PHONE

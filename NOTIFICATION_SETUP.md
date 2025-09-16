@@ -6,18 +6,18 @@ This guide explains how to set up email and WhatsApp notifications for new order
 
 Add these variables to your `.env.local` file:
 
-### Email Notifications (Resend)
+### Email Notifications (Resend) - REQUIRED
 ```env
-# Email service
+# Email service (Required for notifications)
 RESEND_API_KEY=your-resend-api-key
 ADMIN_EMAIL=admin@meenos.com
 ENABLE_EMAIL_NOTIFICATIONS=true
 ENABLE_CUSTOMER_NOTIFICATIONS=true
 ```
 
-### WhatsApp Notifications
+### WhatsApp Notifications (OPTIONAL)
 
-#### Option 1: FREE WhatsApp Services (Recommended)
+#### Option 1: FREE WhatsApp Services (Optional)
 ```env
 # CallMeBot (Free)
 WHATSAPP_FREE_WEBHOOK_URL=https://api.callmebot.com/whatsapp.php?phone=YOUR_PHONE&text=MESSAGE&apikey=YOUR_API_KEY
@@ -60,6 +60,8 @@ CUSTOMER_PHONE=+2348000000000
 2. Get your API key from the dashboard
 3. Add `RESEND_API_KEY` to your environment variables
 4. Set your admin email address
+
+**Note**: The system uses `onboarding@resend.dev` as the sender address by default. This is Resend's verified domain and works immediately without additional setup.
 
 ### 2. WhatsApp Setup
 

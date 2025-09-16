@@ -39,7 +39,7 @@ function MenuItemsDisplay() {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {[...Array(8)].map((_, i) => <Skeleton key={i} className="h-96 w-full" />)}
       </div>
     )
@@ -61,7 +61,7 @@ function MenuItemsDisplay() {
         </TabsList>
       </Tabs>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {filteredItems.map((item) => (
           <FoodItemCard key={item.id} item={item} />
         ))}
@@ -102,7 +102,7 @@ export default function Home() {
         </div>
       </div>
       <div className="container mx-auto px-4 py-8 md:py-12 max-w-7xl">
-        <Suspense fallback={<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6">
+        <Suspense fallback={<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {[...Array(8)].map((_, i) => <Skeleton key={i} className="h-96 w-full" />)}
         </div>}>
           <MenuItemsDisplay />

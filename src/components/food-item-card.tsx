@@ -37,13 +37,13 @@ export function FoodItemCard({ item }: FoodItemCardProps) {
   return (
     <>
       <Card 
-        className="group flex flex-col overflow-hidden h-full transition-all hover:shadow-lg sm:hover:-translate-y-1 cursor-pointer hover:ring-2 hover:ring-primary/20"
+        className="group flex flex-col overflow-hidden h-full transition-all hover:shadow-lg sm:hover:-translate-y-1 cursor-pointer hover:ring-2 hover:ring-primary/20 min-h-[400px]"
         onClick={handleCardClick}
       >
       {/* Desktop View - Default */}
       <div className="hidden sm:block h-full flex flex-col">
           <CardHeader className="p-0">
-            <div className="relative aspect-video w-full">
+            <div className="relative aspect-[4/3] w-full">
               <Image
                 src={item.imageUrl}
                 alt={item.name}
@@ -61,7 +61,7 @@ export function FoodItemCard({ item }: FoodItemCardProps) {
             </div>
           </CardHeader>
           <CardContent className="flex-grow p-6 pt-0">
-            <CardDescription>{item.description}</CardDescription>
+            <CardDescription className="line-clamp-3">{item.description}</CardDescription>
           </CardContent>
           <CardFooter className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-6 pt-0 mt-auto gap-4 sm:gap-2">
             <p className="text-xl font-bold text-primary">

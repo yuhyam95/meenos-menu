@@ -78,7 +78,7 @@ ENABLE_CUSTOMER_NOTIFICATIONS=true
 3. Check that the key is active in your Resend dashboard
 
 ### Domain verification error?
-The system uses `onboarding@resend.dev` by default, which is already verified by Resend. No additional domain setup required.
+The system uses `noreply@meenos.com`. Make sure you have verified the `meenos.com` domain in your Resend dashboard at [resend.com/domains](https://resend.com/domains).
 
 ## Benefits of Email Notifications
 

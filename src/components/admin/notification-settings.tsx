@@ -100,7 +100,7 @@ export function NotificationSettings() {
                   <li>• ENABLE_EMAIL_NOTIFICATIONS=true</li>
                 </ul>
                 <p className="text-xs text-blue-600 mt-2">
-                  Uses <code className="bg-blue-100 px-1 py-0.5 rounded">onboarding@resend.dev</code> (verified domain)
+                  Uses <code className="bg-blue-100 px-1 py-0.5 rounded">noreply@meenos.ng</code> (your verified domain)
                 </p>
               </div>
             </div>

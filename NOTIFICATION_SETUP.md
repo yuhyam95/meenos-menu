@@ -61,7 +61,7 @@ CUSTOMER_PHONE=+2348000000000
 3. Add `RESEND_API_KEY` to your environment variables
 4. Set your admin email address
 
-**Note**: The system uses `onboarding@resend.dev` as the sender address by default. This is Resend's verified domain and works immediately without additional setup.
+**Note**: The system uses `noreply@meenos.com` as the sender address. Make sure you have verified the `meenos.com` domain in your Resend dashboard.
 
 ### 2. WhatsApp Setup
 

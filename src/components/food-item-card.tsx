@@ -86,12 +86,12 @@ export function FoodItemCard({ item }: FoodItemCardProps) {
                 data-ai-hint={item['data-ai-hint']}
             />
         </div>
-        <div className="flex flex-col flex-grow justify-between gap-1">
+        <div className="flex flex-col flex-grow gap-2">
             <div>
                 <h3 className="font-headline font-semibold leading-tight">{item.name}</h3>
-                <p className="text-xs text-muted-foreground line-clamp-2">{item.description}</p>
+                <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{item.description}</p>
             </div>
-            <div className="flex items-end justify-between mt-auto">
+            <div className="flex items-center justify-between">
                 <p className="text-base font-bold text-primary">
                     {item.price.toLocaleString('en-NG', { style: 'currency', currency: 'NGN' })}
                 </p>

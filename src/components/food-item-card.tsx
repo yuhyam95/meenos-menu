@@ -37,7 +37,7 @@ export function FoodItemCard({ item }: FoodItemCardProps) {
   return (
     <>
       <Card 
-        className="group flex flex-col overflow-hidden h-full transition-all hover:shadow-lg sm:hover:-translate-y-1 cursor-pointer hover:ring-2 hover:ring-primary/20 min-h-[400px]"
+        className="group flex flex-col overflow-hidden h-full transition-all hover:shadow-lg sm:hover:-translate-y-1 cursor-pointer hover:ring-2 hover:ring-primary/20 sm:min-h-[400px]"
         onClick={handleCardClick}
       >
       {/* Desktop View - Default */}
@@ -75,7 +75,7 @@ export function FoodItemCard({ item }: FoodItemCardProps) {
       </div>
 
       {/* Mobile View */}
-      <div className="flex sm:hidden flex-row items-stretch p-3 gap-3">
+      <div className="flex sm:hidden flex-row items-stretch p-3 gap-3 h-auto">
         <div className="relative w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0">
             <Image
                 src={item.imageUrl}

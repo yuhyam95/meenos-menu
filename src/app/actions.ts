@@ -175,10 +175,10 @@ export async function addOrder(orderData: Omit<Order, 'id' | '_id' | 'createdAt'
   const collection = await getOrdersCollection();
   const now = new Date();
   const orderWithId = { ...orderData, createdAt: now };
-  await collection.insertOne(orderWithId);
+  const result = await collection.insertOne(orderWithId);
   
   // Generate order ID for notifications
-  const orderId = orderWithId._id?.toString() || 'ORD-' + Date.now();
+  const orderId = result.insertedId.toString();
   const order: Order = { ...orderWithId, id: orderId };
   
   // Send notifications asynchronously (don't block the order creation)
@@ -273,7 +273,41 @@ export async function getInventoryItems(): Promise<InventoryItem[]> {
 
 export async function addInventoryItem(itemData: Omit<InventoryItem, 'id' | '_id'>): Promise<void> {
     const collection = await getInventoryCollection();
-    await collection.insertOne(itemData);
+    const result = await collection.insertOne(itemData);
+    
+    // Check if newly added item is low stock
+    const newItem = await collection.findOne({ _id: result.insertedId });
+    if (newItem && isLowStock(newItem)) {
+        // Send notification asynchronously (don't block the insert)
+        setImmediate(async () => {
+            try {
+                const { sendLowStockEmailNotification } = await import('@/lib/email');
+                const { getNotificationConfig } = await import('@/lib/notifications');
+                const config = getNotificationConfig();
+                
+                if (config.enableEmail) {
+                    const inventoryItem: InventoryItem = {
+                        ...newItem,
+                        id: newItem._id!.toString(),
+                        quantity: newItem.quantity || 0,
+                    };
+                    
+                    await sendLowStockEmailNotification(inventoryItem, config.adminEmail);
+                    
+                    // Update last notification timestamp
+                    await collection.updateOne(
+                        { _id: result.insertedId },
+                        { $set: { lastLowStockNotification: new Date() } }
+                    );
+                    
+                    console.log(`Low stock notification sent for newly added item: ${newItem.name}`);
+                }
+            } catch (error) {
+                console.error('Error sending low stock notification:', error);
+            }
+        });
+    }
+    
     revalidatePath('/admin/inventory');
 }
 
@@ -283,7 +317,46 @@ export async function updateInventoryItem(item: InventoryItem): Promise<void> {
         throw new Error('Invalid ID for updating inventory item.');
     }
     const collection = await getInventoryCollection();
+    
+    // Get previous item state to check if quantity changed
+    const previousItem = await collection.findOne({ _id: new ObjectId(id) });
+    const previousQuantity = previousItem?.quantity || 0;
+    
     await collection.updateOne({ _id: new ObjectId(id) }, { $set: itemData });
+    
+    // Check for low stock after update
+    const updatedItem = await collection.findOne({ _id: new ObjectId(id) });
+    if (updatedItem && shouldSendNotification(updatedItem, previousQuantity)) {
+        // Send notification asynchronously (don't block the update)
+        setImmediate(async () => {
+            try {
+                const { sendLowStockEmailNotification } = await import('@/lib/email');
+                const { getNotificationConfig } = await import('@/lib/notifications');
+                const config = getNotificationConfig();
+                
+                if (config.enableEmail) {
+                    const inventoryItem: InventoryItem = {
+                        ...updatedItem,
+                        id: updatedItem._id!.toString(),
+                        quantity: updatedItem.quantity || 0,
+                    };
+                    
+                    await sendLowStockEmailNotification(inventoryItem, config.adminEmail);
+                    
+                    // Update last notification timestamp
+                    await collection.updateOne(
+                        { _id: new ObjectId(id) },
+                        { $set: { lastLowStockNotification: new Date() } }
+                    );
+                    
+                    console.log(`Low stock notification sent for: ${updatedItem.name}`);
+                }
+            } catch (error) {
+                console.error('Error sending low stock notification:', error);
+            }
+        });
+    }
+    
     revalidatePath('/admin/inventory');
 }
 
@@ -294,6 +367,44 @@ export async function deleteInventoryItem(itemId: string): Promise<void> {
     const collection = await getInventoryCollection();
     await collection.deleteOne({ _id: new ObjectId(itemId) });
     revalidatePath('/admin/inventory');
+}
+
+// Helper function to check if item is low stock and should trigger notification
+function isLowStock(item: { quantity: number; minQuantity?: number }): boolean {
+    // If quantity is 0, always trigger
+    if (item.quantity === 0) return true;
+    // If minQuantity is set and current quantity is at or below it
+    if (item.minQuantity !== undefined && item.quantity <= item.minQuantity) return true;
+    return false;
+}
+
+// Helper function to check if we should send a notification (prevent duplicates)
+function shouldSendNotification(
+    item: { quantity: number; minQuantity?: number; lastLowStockNotification?: Date },
+    previousQuantity: number
+): boolean {
+    // Only send if item is currently low stock
+    if (!isLowStock(item)) return false;
+    
+    // Check if item was already low stock before this change
+    const wasLowStock = previousQuantity === 0 || 
+        (item.minQuantity !== undefined && previousQuantity <= item.minQuantity);
+    
+    // If item just crossed the threshold (was NOT low stock, now IS low stock), always notify
+    if (!wasLowStock) {
+        return true;
+    }
+    
+    // If item was already low stock and still is, only notify if it's been 24+ hours since last notification
+    // This prevents spam for items that stay low stock for extended periods
+    if (wasLowStock && item.lastLowStockNotification) {
+        const hoursSinceLastNotification = (Date.now() - item.lastLowStockNotification.getTime()) / (1000 * 60 * 60);
+        // Only send if it's been more than 24 hours since last notification
+        return hoursSinceLastNotification >= 24;
+    }
+    
+    // If was low stock but no previous notification timestamp, send it
+    return true;
 }
 
 export async function adjustInventoryQuantity(itemId: string, adjustment: number): Promise<void> {
@@ -308,15 +419,51 @@ export async function adjustInventoryQuantity(itemId: string, adjustment: number
         throw new Error('Inventory item not found.');
     }
     
+    const previousQuantity = currentItem.quantity || 0;
+    
     // Prevent negative quantities
-    const newQuantity = (currentItem.quantity || 0) + adjustment;
+    const newQuantity = previousQuantity + adjustment;
     if (newQuantity < 0) {
-        throw new Error(`Cannot decrease quantity below zero. Current quantity: ${currentItem.quantity}, attempted adjustment: ${adjustment}`);
+        throw new Error(`Cannot decrease quantity below zero. Current quantity: ${previousQuantity}, attempted adjustment: ${adjustment}`);
     }
     
     await collection.updateOne(
         { _id: new ObjectId(itemId) },
         { $inc: { quantity: adjustment } }
     );
+    
+    // Check for low stock after adjustment
+    const updatedItem = await collection.findOne({ _id: new ObjectId(itemId) });
+    if (updatedItem && shouldSendNotification(updatedItem, previousQuantity)) {
+        // Send notification asynchronously (don't block the adjustment)
+        setImmediate(async () => {
+            try {
+                const { sendLowStockEmailNotification } = await import('@/lib/email');
+                const { getNotificationConfig } = await import('@/lib/notifications');
+                const config = getNotificationConfig();
+                
+                if (config.enableEmail) {
+                    const inventoryItem: InventoryItem = {
+                        ...updatedItem,
+                        id: updatedItem._id!.toString(),
+                        quantity: updatedItem.quantity || 0,
+                    };
+                    
+                    await sendLowStockEmailNotification(inventoryItem, config.adminEmail);
+                    
+                    // Update last notification timestamp
+                    await collection.updateOne(
+                        { _id: new ObjectId(itemId) },
+                        { $set: { lastLowStockNotification: new Date() } }
+                    );
+                    
+                    console.log(`Low stock notification sent for: ${updatedItem.name}`);
+                }
+            } catch (error) {
+                console.error('Error sending low stock notification:', error);
+            }
+        });
+    }
+    
     revalidatePath('/admin/inventory');
 }

@@ -1,5 +1,5 @@
 import { Resend } from 'resend';
-import type { Order } from './types';
+import type { Order, InventoryItem } from './types';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -228,6 +228,108 @@ export async function sendCustomerConfirmationEmail(order: Order, customerEmail?
     return { success: true, data };
   } catch (error) {
     console.error('Error sending customer confirmation email:', error);
+    return { success: false, error };
+  }
+}
+
+export async function sendLowStockEmailNotification(item: InventoryItem, adminEmail: string) {
+  try {
+    const stockStatus = item.quantity === 0 
+      ? 'OUT OF STOCK' 
+      : `LOW STOCK (${item.quantity.toLocaleString()} ${item.unit} remaining)`;
+    
+    const urgencyLevel = item.quantity === 0 ? 'critical' : 'warning';
+    const bgColor = item.quantity === 0 
+      ? 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)' 
+      : 'linear-gradient(135deg, #ffc107 0%, #ff9800 100%)';
+    
+    const { data, error } = await resend.emails.send({
+      from: 'Meenos Restaurant <noreply@meenos.ng>',
+      to: [adminEmail],
+      subject: `⚠️ Low Stock Alert: ${item.name}`,
+      html: `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
+          <!-- Header with Alert -->
+          <div style="background: ${bgColor}; padding: 30px 20px; text-align: center; border-radius: 12px 12px 0 0;">
+            <img src="https://meenos.ng/meenos-logo.png" alt="Meenos Restaurant" style="height: 60px; margin-bottom: 15px;" />
+            <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">⚠️ ${item.quantity === 0 ? 'OUT OF STOCK' : 'LOW STOCK ALERT'}</h1>
+            <p style="color: #ffffff; margin: 8px 0 0 0; font-size: 18px; opacity: 0.95; font-weight: 600;">${item.name}</p>
+          </div>
+          
+          <!-- Alert Details -->
+          <div style="background: #f8f9fa; padding: 25px; margin: 0; border-left: 4px solid ${item.quantity === 0 ? '#dc3545' : '#ffc107'};">
+            <h2 style="color: #2c3e50; margin: 0 0 20px 0; font-size: 22px; font-weight: 600;">📦 Inventory Status</h2>
+            
+            <div style="background: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 15px;">
+              <p style="margin: 0 0 8px 0; color: #6c757d; font-size: 14px; font-weight: 500;">MATERIAL NAME</p>
+              <p style="margin: 0; color: #2c3e50; font-size: 20px; font-weight: 700;">${item.name}</p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+              <div style="background: #ffffff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <p style="margin: 0 0 8px 0; color: #6c757d; font-size: 14px; font-weight: 500;">CURRENT QUANTITY</p>
+                <p style="margin: 0; color: ${item.quantity === 0 ? '#dc3545' : '#ff9800'}; font-size: 24px; font-weight: 700;">${item.quantity.toLocaleString()} ${item.unit}</p>
+              </div>
+              <div style="background: #ffffff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <p style="margin: 0 0 8px 0; color: #6c757d; font-size: 14px; font-weight: 500;">MINIMUM QUANTITY</p>
+                <p style="margin: 0; color: #2c3e50; font-size: 24px; font-weight: 700;">${item.minQuantity !== undefined ? item.minQuantity.toLocaleString() + ' ' + item.unit : 'Not Set'}</p>
+              </div>
+            </div>
+            
+            ${item.description ? `
+              <div style="background: #ffffff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-top: 15px;">
+                <p style="margin: 0 0 8px 0; color: #6c757d; font-size: 14px; font-weight: 500;">DESCRIPTION</p>
+                <p style="margin: 0; color: #2c3e50; font-size: 16px; line-height: 1.4;">${item.description}</p>
+              </div>
+            ` : ''}
+          </div>
+          
+          <!-- Action Required -->
+          <div style="background: ${bgColor}; padding: 25px; text-align: center; margin: 0;">
+            <h2 style="color: #ffffff; margin: 0 0 15px 0; font-size: 22px; font-weight: 600;">⚡ Action Required</h2>
+            <p style="margin: 0 0 15px 0; color: #ffffff; font-size: 16px; line-height: 1.6;">
+              ${item.quantity === 0 
+                ? 'This item is completely out of stock. Please restock immediately to avoid service disruption.'
+                : `This item is running low. Current quantity (${item.quantity.toLocaleString()} ${item.unit}) is ${item.minQuantity !== undefined ? 'at or below' : 'low'} the minimum threshold${item.minQuantity !== undefined ? ` of ${item.minQuantity.toLocaleString()} ${item.unit}` : ''}. Please consider restocking soon.`
+              }
+            </p>
+            <p style="margin: 0; color: #ffffff; font-size: 16px; font-weight: 600;">📋 View and manage inventory in your admin panel</p>
+          </div>
+          
+          <!-- Footer -->
+          <div style="text-align: center; padding: 20px; color: #6c757d; font-size: 14px; border-radius: 0 0 12px 12px; background: #f8f9fa;">
+            <p style="margin: 0;">Alert generated: ${new Date().toLocaleString()}</p>
+            <p style="margin: 8px 0 0 0;">Meenos Restaurant Inventory Management System 🍽️</p>
+          </div>
+        </div>
+      `,
+      text: `
+Low Stock Alert: ${item.name}
+
+Current Quantity: ${item.quantity.toLocaleString()} ${item.unit}
+Minimum Quantity: ${item.minQuantity !== undefined ? item.minQuantity.toLocaleString() + ' ' + item.unit : 'Not Set'}
+Status: ${stockStatus}
+
+${item.description ? `Description: ${item.description}` : ''}
+
+Action Required: ${item.quantity === 0 
+  ? 'This item is completely out of stock. Please restock immediately.'
+  : `This item is running low. Please consider restocking soon.`
+}
+
+View and manage inventory in your admin panel.
+      `.trim(),
+    });
+
+    if (error) {
+      console.error('Error sending low stock email notification:', error);
+      return { success: false, error };
+    }
+
+    console.log('Low stock email notification sent successfully:', data);
+    return { success: true, data };
+  } catch (error) {
+    console.error('Error sending low stock email notification:', error);
     return { success: false, error };
   }
 }

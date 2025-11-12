@@ -83,4 +83,5 @@ export interface InventoryItem {
     quantity: number;
     minQuantity?: number; // Optional minimum stock level
     description?: string;
+    lastLowStockNotification?: Date; // Track when last low stock notification was sent
 }

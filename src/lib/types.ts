@@ -74,3 +74,13 @@ export interface User {
     role: 'Admin' | 'User';
     password?: string;
 }
+
+export interface InventoryItem {
+    _id?: ObjectId;
+    id?: string;
+    name: string;
+    unit: string; // e.g., "kg", "liters", "pieces", "boxes"
+    quantity: number;
+    minQuantity?: number; // Optional minimum stock level
+    description?: string;
+}

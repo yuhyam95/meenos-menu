@@ -3,7 +3,7 @@
 
 import { revalidatePath } from 'next/cache';
 import clientPromise from '@/lib/db';
-import type { DeliveryLocation, FoodItem, FoodCategory, Order, OrderStatus, StoreSetting, User } from '@/lib/types';
+import type { DeliveryLocation, FoodItem, FoodCategory, Order, OrderStatus, StoreSetting, User, InventoryItem } from '@/lib/types';
 import { Collection, ObjectId } from 'mongodb';
 
 async function getDeliveryCollection(): Promise<Collection<DeliveryLocation>> {
@@ -40,6 +40,12 @@ async function getUsersCollection(): Promise<Collection<Omit<User, 'id'>>> {
     const client = await clientPromise;
     const db = client.db('meenos');
     return db.collection<Omit<User, 'id'>>('users');
+}
+
+async function getInventoryCollection(): Promise<Collection<Omit<InventoryItem, 'id'>>> {
+    const client = await clientPromise;
+    const db = client.db('meenos');
+    return db.collection<Omit<InventoryItem, 'id'>>('inventory_items');
 }
 
 
@@ -253,4 +259,64 @@ export async function addUser(userData: Omit<User, 'id' | '_id'>): Promise<void>
     // await collection.insertOne({ ...userData, password: hashedPassword });
     await collection.insertOne(userData);
     revalidatePath('/admin/users');
+}
+
+// Inventory Actions
+export async function getInventoryItems(): Promise<InventoryItem[]> {
+    const collection = await getInventoryCollection();
+    const items = await collection.find({}).sort({ name: 1 }).toArray();
+    return items.map(item => {
+        const { _id, ...rest } = item;
+        return { ...rest, id: _id!.toString() };
+    });
+}
+
+export async function addInventoryItem(itemData: Omit<InventoryItem, 'id' | '_id'>): Promise<void> {
+    const collection = await getInventoryCollection();
+    await collection.insertOne(itemData);
+    revalidatePath('/admin/inventory');
+}
+
+export async function updateInventoryItem(item: InventoryItem): Promise<void> {
+    const { id, ...itemData } = item;
+    if (!id || !ObjectId.isValid(id)) {
+        throw new Error('Invalid ID for updating inventory item.');
+    }
+    const collection = await getInventoryCollection();
+    await collection.updateOne({ _id: new ObjectId(id) }, { $set: itemData });
+    revalidatePath('/admin/inventory');
+}
+
+export async function deleteInventoryItem(itemId: string): Promise<void> {
+    if (!ObjectId.isValid(itemId)) {
+        throw new Error('Invalid ID for deleting inventory item.');
+    }
+    const collection = await getInventoryCollection();
+    await collection.deleteOne({ _id: new ObjectId(itemId) });
+    revalidatePath('/admin/inventory');
+}
+
+export async function adjustInventoryQuantity(itemId: string, adjustment: number): Promise<void> {
+    if (!ObjectId.isValid(itemId)) {
+        throw new Error('Invalid ID for adjusting inventory quantity.');
+    }
+    const collection = await getInventoryCollection();
+    
+    // Get current item to check quantity before adjustment
+    const currentItem = await collection.findOne({ _id: new ObjectId(itemId) });
+    if (!currentItem) {
+        throw new Error('Inventory item not found.');
+    }
+    
+    // Prevent negative quantities
+    const newQuantity = (currentItem.quantity || 0) + adjustment;
+    if (newQuantity < 0) {
+        throw new Error(`Cannot decrease quantity below zero. Current quantity: ${currentItem.quantity}, attempted adjustment: ${adjustment}`);
+    }
+    
+    await collection.updateOne(
+        { _id: new ObjectId(itemId) },
+        { $inc: { quantity: adjustment } }
+    );
+    revalidatePath('/admin/inventory');
 }

@@ -31,7 +31,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
   } from "@/components/ui/alert-dialog"
-import { MoreHorizontal, PlusCircle, Pencil, Trash2 } from 'lucide-react';
+import { MoreHorizontal, PlusCircle, Pencil, Trash2, Search } from 'lucide-react';
 import { MenuItemForm } from './menu-item-form';
 import {
     DropdownMenu,
@@ -41,6 +41,7 @@ import {
   } from "@/components/ui/dropdown-menu"
 import { getMenuItems, addMenuItem, updateMenuItem, deleteMenuItem, getFoodCategories } from '@/app/actions';
 import { Badge } from '../ui/badge';
+import { Input } from '@/components/ui/input';
   
 
 export function MenuManager() {
@@ -49,6 +50,7 @@ export function MenuManager() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<FoodItem | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   useEffect(() => {
     async function fetchData() {
@@ -94,9 +96,30 @@ export function MenuManager() {
     setMenuItems(updatedItems);
   };
 
+  // Filter menu items based on search query
+  const filteredItems = menuItems.filter(item => {
+    if (!searchQuery.trim()) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      item.name.toLowerCase().includes(query) ||
+      item.category.toLowerCase().includes(query) ||
+      (item.description && item.description.toLowerCase().includes(query))
+    );
+  });
+
   return (
     <>
-      <div className="flex justify-end mb-4">
+      <div className="flex flex-col sm:flex-row gap-4 mb-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <Input
+            type="text"
+            placeholder="Search by name, category, or description..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9"
+          />
+        </div>
         <Button onClick={handleAddNew}>
           <PlusCircle className="mr-2 h-4 w-4" />
           Add New Item
@@ -119,12 +142,14 @@ export function MenuManager() {
                 <TableRow>
                     <TableCell colSpan={6} className="text-center h-24">Loading menu items...</TableCell>
                 </TableRow>
-            ) : menuItems.length === 0 ? (
+            ) : filteredItems.length === 0 ? (
                 <TableRow>
-                    <TableCell colSpan={6} className="text-center h-24">No menu items found.</TableCell>
+                    <TableCell colSpan={6} className="text-center h-24">
+                      {searchQuery ? `No items found matching "${searchQuery}"` : 'No menu items found.'}
+                    </TableCell>
                 </TableRow>
             ) : (
-                menuItems.map((item) => (
+                filteredItems.map((item) => (
                 <TableRow key={item.id}>
                     <TableCell>
                     <div className="relative h-12 w-12 overflow-hidden rounded-md">

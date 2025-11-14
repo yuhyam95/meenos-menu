@@ -164,6 +164,7 @@ export async function deleteFoodCategory(categoryId: string): Promise<void> {
 // Order Actions
 export async function getOrders(): Promise<Order[]> {
   const collection = await getOrdersCollection();
+  // Sort by latest first (descending order by createdAt)
   const orders = await collection.find({}).sort({ createdAt: -1 }).toArray();
   return orders.map(order => {
     const { _id, ...rest } = order;

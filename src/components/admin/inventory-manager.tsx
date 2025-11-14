@@ -29,7 +29,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
   } from "@/components/ui/alert-dialog"
-import { MoreHorizontal, PlusCircle, Pencil, Trash2, Plus, Minus } from 'lucide-react';
+import { MoreHorizontal, PlusCircle, Pencil, Trash2, Plus, Minus, Search } from 'lucide-react';
 import { InventoryForm } from './inventory-form';
 import {
     DropdownMenu,
@@ -60,6 +60,7 @@ export function InventoryManager() {
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
   const [adjustmentAmount, setAdjustmentAmount] = useState<string>('');
   const [isIncrease, setIsIncrease] = useState(true);
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -152,9 +153,30 @@ export function InventoryManager() {
     return item.minQuantity !== undefined && item.quantity <= item.minQuantity;
   };
 
+  // Filter inventory items based on search query
+  const filteredItems = inventoryItems.filter(item => {
+    if (!searchQuery.trim()) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      item.name.toLowerCase().includes(query) ||
+      item.unit.toLowerCase().includes(query) ||
+      (item.description && item.description.toLowerCase().includes(query))
+    );
+  });
+
   return (
     <>
-      <div className="flex justify-end mb-4">
+      <div className="flex flex-col sm:flex-row gap-4 mb-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <Input
+            type="text"
+            placeholder="Search by name, unit, or description..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9"
+          />
+        </div>
         <Button onClick={handleAddNew}>
           <PlusCircle className="mr-2 h-4 w-4" />
           Add New Material
@@ -177,12 +199,14 @@ export function InventoryManager() {
                 <TableRow>
                     <TableCell colSpan={6} className="text-center h-24">Loading inventory items...</TableCell>
                 </TableRow>
-            ) : inventoryItems.length === 0 ? (
+            ) : filteredItems.length === 0 ? (
                 <TableRow>
-                    <TableCell colSpan={6} className="text-center h-24">No inventory items found.</TableCell>
+                    <TableCell colSpan={6} className="text-center h-24">
+                      {searchQuery ? `No items found matching "${searchQuery}"` : 'No inventory items found.'}
+                    </TableCell>
                 </TableRow>
             ) : (
-                inventoryItems.map((item) => (
+                filteredItems.map((item) => (
                 <TableRow key={item.id}>
                     <TableCell className="font-medium">{item.name}</TableCell>
                     <TableCell className="text-muted-foreground">{item.unit}</TableCell>
